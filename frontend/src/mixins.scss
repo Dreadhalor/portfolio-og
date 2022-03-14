@@ -1,0 +1,39 @@
+@use "sass:math";
+
+//custom mixins
+@mixin ds-scrollbars($scrollbar-thickness: 5px, $rounded: false) {
+  $ds-scrollbar-track-background: #b3b3b3;
+
+  $ds-line-default-color: rgb(203, 213, 225);
+
+  ::-webkit-scrollbar {
+    height: $scrollbar-thickness;
+    width: $scrollbar-thickness;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: $ds-line-default-color;
+  }
+
+  //can't find any situation where there is a track-piece
+  /*::-webkit-scrollbar-track-piece {
+    background: blue;
+  }*/
+
+  ::-webkit-scrollbar-corner {
+    background: $ds-line-default-color;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: $ds-scrollbar-track-background;
+    @if ($rounded) {
+      border-radius: math.div($scrollbar-thickness, 2);
+    }
+
+    &:hover {
+      background: #a3a3a3;
+    }
+  }
+}

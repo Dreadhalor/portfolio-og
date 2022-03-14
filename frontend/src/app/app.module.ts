@@ -6,9 +6,10 @@ import { AppComponent } from './app.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { ViewerComponent } from './components/viewer/viewer.component';
 import { SafePipe } from './pipes/safe.pipe';
+import { AppIconComponent } from './components/app-icon/app-icon.component';
 
 @NgModule({
-  declarations: [AppComponent, NavbarComponent, ViewerComponent, SafePipe],
+  declarations: [AppComponent, NavbarComponent, ViewerComponent, SafePipe, AppIconComponent],
   imports: [BrowserModule, AppRoutingModule],
   providers: [SafePipe],
   bootstrap: [AppComponent],

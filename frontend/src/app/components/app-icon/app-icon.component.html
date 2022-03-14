@@ -1,0 +1,21 @@
+<div #wrapper>
+  <div
+    #content
+    class="width-transition min-w-0 overflow-hidden"
+    [style.border]="getContainerBorder()"
+    [style.padding.px]="getPadding()"
+    [style.width.px]="getFullWidth()"
+    (click)="clicked()"
+    (pointerenter)="mouseenter()"
+    (pointerleave)="mouseleave()"
+  >
+    <div #childstuff class="flex min-w-max flex-row gap-3">
+      <div
+        [style.width.px]="getBoxWidth()"
+        [style.height.px]="getBoxHeight()"
+        [style.border]="getChildBorder()"
+      ></div>
+      <span class="m-auto overflow-hidden">{{ getAppName() }}</span>
+    </div>
+  </div>
+</div>
