@@ -1,0 +1,17 @@
+<div
+  class="relative w-full overflow-hidden bg-blue-400"
+  (pointerdown)="pointerdown($event)"
+  (keydown.arrowright)="rightdown($event)"
+  (keydown.arrowleft)="leftdown($event)"
+  [style.height.px]="getIconLength()"
+>
+  <sh-app-icon-two
+    *ngFor="let app of getData(); let i = index"
+    class="absolute"
+    [sideLength]="getSideLength()"
+    [padding]="getPadding()"
+    [border]="getBorder()"
+    [style.top.px]="0"
+    [style.left.px]="i * getIconLength() + getOffset()"
+  ></sh-app-icon-two>
+</div>
