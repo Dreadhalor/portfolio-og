@@ -145,7 +145,6 @@ export class NavbarTwoComponent implements OnInit, OnDestroy {
     }
     return 1;
   }
-  private timestamp = 0;
 
   getDelta(t1: number, t2: number) {
     let delta_ms = t2 - t1;
@@ -162,27 +161,49 @@ export class NavbarTwoComponent implements OnInit, OnDestroy {
     let tick_dx = this.velocity * delta;
     this.offset += tick_dx;
   };
+  getLeftScrollLimit() {
+    let body_len = document.body.offsetWidth;
+    let zero_left = (body_len - this.getIconLength()) / 2;
+    let result = zero_left - this.offset;
+    return zero_left;
+  }
+  getRightScrollLimit() {
+    let num = this.site.getTestData().length;
+    let length = num * this.getIconLength();
+    let body_len = document.body.offsetWidth;
+    let zero_right = (body_len + this.getIconLength()) / 2;
+    let result = zero_right - (this.offset + length);
+    return result;
+  }
   getOverscroll() {
     let num = this.site.getTestData().length;
     let length = num * this.getIconLength();
     let body_len = document.body.offsetWidth;
-    let zero = (body_len - this.getIconLength()) / 2;
-    console.log(zero);
-    console.log(this.offset);
+    let zero_left = (body_len - this.getIconLength()) / 2;
+    let zero_right = (body_len + this.getIconLength()) / 2;
+    let result = zero_left - this.offset;
+    let result_2 = zero_right - (this.offset + length);
+    console.log(result + ', ' + result_2);
+    return [result, result_2];
+    // return result;
+  }
+  getBackgroundColor() {
+    let [left_overscroll, right_overscroll] = this.getOverscroll();
+    if (left_overscroll < 0 || right_overscroll > 0) return 'rgb(255,100,100)';
+    return 'rgb(150,150,255)';
   }
 
-  private tick_debounce_limit = 1;
-  private tick_debounce = this.tick_debounce_limit;
+  // private timestamp = 0;
   tick = (time: number) => {
     this.tickPointer();
     if (this.velocity !== 0) {
       // let delta = this.getDelta(this.timestamp, time);
-      this.timestamp = time;
+      // this.timestamp = time;
       this.offset += this.velocity;
       this.velocity *= this.damping;
       if (Math.abs(this.velocity) < 0.1) this.velocity = 0;
     }
     this.getOverscroll();
-    requestAnimationFrame(() => requestAnimationFrame(this.tick));
+    requestAnimationFrame(this.tick);
   };
 }

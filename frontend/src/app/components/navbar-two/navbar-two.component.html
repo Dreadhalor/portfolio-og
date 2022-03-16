@@ -1,8 +1,16 @@
 <div
-  class="relative w-full overflow-hidden bg-blue-400"
+  class="relative w-full overflow-hidden"
   (pointerdown)="pointerdown($event)"
   [style.height.px]="getIconLength()"
+  [style.background-color]="getBackgroundColor()"
 >
+  <div
+    class="absolute z-10 border-2 border-black"
+    [style.width.px]="getIconLength()"
+    [style.height.px]="getIconLength()"
+    [style.top.px]="0"
+    [style.left.px]="getLeftScrollLimit()"
+  ></div>
   <sh-app-icon-two
     *ngFor="let app of getData(); let i = index"
     class="absolute"
