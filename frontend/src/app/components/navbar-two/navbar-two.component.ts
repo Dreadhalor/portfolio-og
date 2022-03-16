@@ -56,14 +56,11 @@ export class NavbarTwoComponent implements OnInit, OnDestroy {
 
   queuePointerMove(event: PointerEvent) {
     this.lastMouseMove = this.currentMouseMove;
-    // this.lastMouse = this.currentMouse;
     this.currentMouseMove = event;
-    // this.currentMouse = event;
   }
   tickPointer() {
     this.lastMouseTick = this.currentMouseTick;
     this.currentMouseTick = this.currentMouseMove;
-    console.log('tickDX: ' + this.getTickDX());
   }
   tickPointerMove() {
     this.lastMouseMove = this.currentMouseMove;
@@ -75,28 +72,20 @@ export class NavbarTwoComponent implements OnInit, OnDestroy {
   }
 
   pointerdown(event: PointerEvent) {
-    // this.setMouseEvent(event);
-    // this.mouseEvent = event;
     this.dragstart = event.clientX - this.offset;
     this.velocity = 0;
   }
   pointermove = (event: PointerEvent) => {
-    // this.setMouseEvent(event);
     if (this.dragstart !== null) {
-      // console.log(event.getCoalescedEvents());
-      // console.log(this.dragstart);
       this.queuePointerMove(event);
       this.offset = event.clientX - this.dragstart;
-      // console.log('offset: ' + this.offset);
     }
-    // else this.lastMouseMove = null;
   };
   pointerup = (event: PointerEvent) => {
-    // this.setMouseEvent(event);
     this.setVelocity(event);
     this.resetPointerMoves();
     this.dragstart = null;
-    console.log('window mouseup, dragstart: ' + this.dragstart);
+    // console.log('window mouseup, dragstart: ' + this.dragstart);
   };
 
   setVelocity = (mouseup: PointerEvent) => {
@@ -106,11 +95,9 @@ export class NavbarTwoComponent implements OnInit, OnDestroy {
     if (!this.currentMouseTick || !this.lastMouseTick) return 0;
     if (this.currentMouseTick === this.lastMouseTick) return 0;
     let dx = this.getTickDX();
-    // console.log('dx: ' + dx);
     let dt = this.getTickDT();
-    // console.log('dt: ' + dt);
+    // let v = dx / dt;
     let v = dx;
-    // console.log('v: ' + v);
     return v;
   }
   getTickDX() {
@@ -133,11 +120,9 @@ export class NavbarTwoComponent implements OnInit, OnDestroy {
     if (!this.currentMouseMove || !this.lastMouseMove) return 0;
     if (this.currentMouseMove === this.lastMouseMove) return 0;
     let dx = this.getDX();
-    console.log('dx: ' + dx);
     let dt = this.getDT();
-    console.log('dt: ' + dt);
+    // let v = dx / dt;
     let v = dx;
-    console.log('v: ' + v);
     return v;
   }
   getDX() {
@@ -160,13 +145,10 @@ export class NavbarTwoComponent implements OnInit, OnDestroy {
 
   getDelta(t1: number, t2: number) {
     let delta_ms = t2 - t1;
-    // console.log(delta_ms);
     let delta_s = delta_ms / 1000;
-    // console.log(delta_s);
     return delta_s;
   }
 
-  tickAcceleration() {}
   tickVelocity = (delta: number) => {
     let absolute_dv = this.velocity * this.c;
     let tick_dv = absolute_dv * delta;
@@ -176,32 +158,25 @@ export class NavbarTwoComponent implements OnInit, OnDestroy {
     let tick_dx = this.velocity * delta;
     this.offset += tick_dx;
   };
+  getOverscroll() {
+    let num = this.site.getTestData().length;
+    let length = num * this.getIconLength();
+    let body_len = document.body.offsetWidth;
+    let zero = (body_len - this.getIconLength()) / 2;
+    console.log(zero);
+    console.log(this.offset);
+  }
 
   tick = (time: number) => {
-    // console.log('time: ' + time);
-    // console.log('velocity: ' + this.velocity);
-    // console.log('offset: ' + this.offset);
     this.tickPointer();
     if (this.velocity !== 0) {
-      let delta = this.getDelta(this.timestamp, time);
-      // console.log('new delta: ' + delta);
+      // let delta = this.getDelta(this.timestamp, time);
       this.timestamp = time;
-      // this.tickVelocity(delta);
-      // this.tickPosition(delta);
-
-      // let dv = this.velocity * this.c * delta;
-      // this.velocity -= dv;
-
-      // this.offset += Math.floor((this.velocity * delta) / 1000);
       this.offset += this.velocity;
-      // this.offset += this.velocity;
-      // console.log(this.offset);
-      // this.velocity *= this.damping * delta;
       this.velocity *= this.damping;
       if (Math.abs(this.velocity) < 0.1) this.velocity = 0;
-      // console.log('tick-end velocity: ' + this.velocity);
     }
-    // this.tickPointerMove();
+    this.getOverscroll();
     requestAnimationFrame(this.tick);
   };
 }
