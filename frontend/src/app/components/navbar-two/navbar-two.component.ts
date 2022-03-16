@@ -91,13 +91,17 @@ export class NavbarTwoComponent implements OnInit, OnDestroy {
   setVelocity = (mouseup: PointerEvent) => {
     this.velocity = this.calculateTickVelocity();
   };
+  private velocity_limit = 50;
   calculateTickVelocity() {
     if (!this.currentMouseTick || !this.lastMouseTick) return 0;
     if (this.currentMouseTick === this.lastMouseTick) return 0;
     let dx = this.getTickDX();
     let dt = this.getTickDT();
     // let v = dx / dt;
-    let v = dx;
+    let v =
+      Math.abs(dx) < this.velocity_limit
+        ? dx
+        : Math.sign(dx) * this.velocity_limit;
     return v;
   }
   getTickDX() {
@@ -167,6 +171,8 @@ export class NavbarTwoComponent implements OnInit, OnDestroy {
     console.log(this.offset);
   }
 
+  private tick_debounce_limit = 1;
+  private tick_debounce = this.tick_debounce_limit;
   tick = (time: number) => {
     this.tickPointer();
     if (this.velocity !== 0) {
@@ -177,6 +183,6 @@ export class NavbarTwoComponent implements OnInit, OnDestroy {
       if (Math.abs(this.velocity) < 0.1) this.velocity = 0;
     }
     this.getOverscroll();
-    requestAnimationFrame(this.tick);
+    requestAnimationFrame(() => requestAnimationFrame(this.tick));
   };
 }
