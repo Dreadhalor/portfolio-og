@@ -20,16 +20,19 @@ export class NavbarTwoComponent implements OnInit, OnDestroy {
   private border = 1;
   private offset = 0;
   private velocity = 0;
+  private velocity_limit = 100;
+  private velocity_zero_limit = 0.1;
+  private velocity_snap_limit = 1;
   private acceleration = 0;
-  private damping = 0.95;
+  private damping = 0.97;
 
   private dragstart: number | null = null;
 
-  private lastMouseMove: PointerEvent | null = null;
   private currentMouseMove: PointerEvent | null = null;
-
   private currentMouseTick: PointerEvent | null = null;
   private lastMouseTick: PointerEvent | null = null;
+
+  private snapping = false;
 
   constructor(private site: SiteService) {}
 
@@ -61,22 +64,22 @@ export class NavbarTwoComponent implements OnInit, OnDestroy {
   getData() {
     return this.site.getTestData();
   }
+  getAnchors() {
+    let data = this.getData();
+    let lefts = data.map(
+      (val: string, index: number) => index * this.getIconLength()
+    );
+    let anchors = lefts.map((x_coord) => x_coord + this.getIconLength() / 2);
+    // console.log(anchors);
+    return anchors;
+  }
 
-  queuePointerMove(event: PointerEvent) {
-    this.lastMouseMove = this.currentMouseMove;
+  queuePointerMove(event: PointerEvent | null) {
     this.currentMouseMove = event;
   }
   tickPointer() {
     this.lastMouseTick = this.currentMouseTick;
     this.currentMouseTick = this.currentMouseMove;
-  }
-  tickPointerMove() {
-    this.lastMouseMove = this.currentMouseMove;
-    this.currentMouseMove = null;
-  }
-  resetPointerMoves() {
-    this.lastMouseMove = null;
-    this.currentMouseMove = null;
   }
 
   pointerdown(event: PointerEvent) {
@@ -91,32 +94,27 @@ export class NavbarTwoComponent implements OnInit, OnDestroy {
   };
   pointerup = (event: PointerEvent) => {
     this.setVelocity(event);
-    this.resetPointerMoves();
+    this.queuePointerMove(null);
     this.dragstart = null;
-    // console.log('window mouseup, dragstart: ' + this.dragstart);
   };
 
   setVelocity = (mouseup: PointerEvent) => {
     this.velocity = this.calculateTickVelocity();
   };
-  private velocity_limit = 50;
   calculateTickVelocity() {
     if (!this.currentMouseTick || !this.lastMouseTick) return 0;
     if (this.currentMouseTick === this.lastMouseTick) return 0;
     let dx = this.getTickDX();
-    let dt = this.getTickDT();
+    // let dt = this.getTickDT();
     // let v = dx / dt;
-    let v =
-      Math.abs(dx) < this.velocity_limit
-        ? dx
-        : Math.sign(dx) * this.velocity_limit;
+    let v = this.constrainAbsoluteValue(dx, this.velocity_limit, -1);
     return v;
   }
   getTickDX() {
     if (this.currentMouseTick && this.lastMouseTick) {
       let x1 = this.currentMouseTick?.clientX;
       let x2 = this.lastMouseTick?.clientX;
-      return Math.round(x1 - x2);
+      return x1 - x2;
     }
     return 0;
   }
@@ -124,32 +122,10 @@ export class NavbarTwoComponent implements OnInit, OnDestroy {
     if (this.currentMouseTick && this.lastMouseTick) {
       let t1 = this.currentMouseTick?.timeStamp;
       let t2 = this.lastMouseTick?.timeStamp;
-      return (t1 - t2) / 100;
-    }
-    return 1;
-  }
-  calculateVelocity() {
-    if (!this.currentMouseMove || !this.lastMouseMove) return 0;
-    if (this.currentMouseMove === this.lastMouseMove) return 0;
-    let dx = this.getDX();
-    let dt = this.getDT();
-    // let v = dx / dt;
-    let v = dx;
-    return v;
-  }
-  getDX() {
-    if (this.currentMouseMove && this.lastMouseMove) {
-      let x1 = this.currentMouseMove?.clientX;
-      let x2 = this.lastMouseMove?.clientX;
-      return x1 - x2;
-    }
-    return 0;
-  }
-  getDT() {
-    if (this.currentMouseMove && this.lastMouseMove) {
-      let t1 = this.currentMouseMove?.timeStamp;
-      let t2 = this.lastMouseMove?.timeStamp;
-      return (t1 - t2) / 300;
+      // console.log(t1);
+      // console.log(t2);
+      // console.log('----');
+      return (t1 - t2) / 1000;
     }
     return 1;
   }
@@ -209,6 +185,12 @@ export class NavbarTwoComponent implements OnInit, OnDestroy {
     if (right > 0) return right;
     return 0;
   }
+  getPointOverscroll(x_coord: number) {
+    let center = this.getCenter();
+    let normalized = center - x_coord;
+    let dist = normalized - this.offset;
+    return dist;
+  }
   getBackgroundColor() {
     let [left_overscroll, right_overscroll] = this.getOverscroll();
     if (left_overscroll < 0 || right_overscroll > 0) return 'rgb(255,100,100)';
@@ -220,15 +202,22 @@ export class NavbarTwoComponent implements OnInit, OnDestroy {
   getContainerWidth() {
     return this.container?.nativeElement?.offsetWidth ?? 0;
   }
+  constrainAbsoluteValue(value: number, constraint: number, direction: number) {
+    if (direction > 0 && Math.abs(value) < constraint)
+      return Math.sign(value) * constraint;
+    if (direction < 0 && Math.abs(value) > constraint)
+      return Math.sign(value) * constraint;
+    return value;
+  }
 
   tickAcceleration = () => {
     let overscroll = this.getOverscroll2();
-    console.log(overscroll);
-    this.acceleration += overscroll / 50;
+    // console.log(overscroll);
+    this.acceleration += this.constrainAbsoluteValue(overscroll / 20, 1, 1);
   };
   tickVelocity = () => {
-    this.velocity += this.acceleration;
     this.velocity *= this.damping;
+    this.velocity += this.acceleration;
   };
   tickPosition = () => {
     let pre_overscroll = this.getOverscroll2();
@@ -244,9 +233,41 @@ export class NavbarTwoComponent implements OnInit, OnDestroy {
     this.acceleration = 0;
   };
   // private timestamp = 0;
+  getScrollX() {
+    return this.getCenter() - this.offset;
+  }
+  setScrollX(x_coord: number) {
+    this.offset = this.getCenter() - x_coord;
+  }
+  getNearestAnchor() {
+    let x = this.getScrollX();
+    let anchors = this.getAnchors();
+    let distances = anchors.map((anchor, index) => [
+      Math.abs(anchor - x),
+      index,
+    ]);
+    distances.sort((a, b) => a[0] - b[0]);
+    return anchors[distances[0][1]];
+  }
+  tickSnapTo(x_coord: number) {
+    let overscroll = this.getPointOverscroll(x_coord);
+    // console.log(overscroll);
+    this.acceleration += this.constrainAbsoluteValue(overscroll / 20, 1, 1);
+  }
   tick = (time: number) => {
+    // console.log(this.getPointOverscroll(anchor));
+    // this.tickSnapTo(anchor);
+
     this.tickPointer();
     if (!this.dragstart) {
+      if (this.snapping || Math.abs(this.velocity) < this.velocity_snap_limit) {
+        let anchor = this.getNearestAnchor();
+        console.log(anchor);
+        this.tickSnapTo(anchor);
+        this.snapping = true;
+        // this.velocity = 0;
+      }
+
       // let delta = this.getDelta(this.timestamp, time);
       // this.timestamp = time;
       this.tickAcceleration();
@@ -254,7 +275,10 @@ export class NavbarTwoComponent implements OnInit, OnDestroy {
       this.tickPosition();
       // this.velocity *= this.damping;
       // this.offset += this.velocity;
-      if (this.velocity !== 0 && Math.abs(this.velocity) < 0.1)
+      if (
+        this.velocity !== 0 &&
+        Math.abs(this.velocity) < this.velocity_zero_limit
+      )
         this.velocity = 0;
     }
     this.getOverscroll();
