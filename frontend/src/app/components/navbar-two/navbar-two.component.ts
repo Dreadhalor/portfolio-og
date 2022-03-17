@@ -1,4 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { SiteService } from 'src/app/services/site.service';
 
 @Component({
@@ -7,13 +13,15 @@ import { SiteService } from 'src/app/services/site.service';
   styleUrls: ['./navbar-two.component.scss'],
 })
 export class NavbarTwoComponent implements OnInit, OnDestroy {
+  @ViewChild('container') container!: ElementRef<HTMLDivElement>;
+
   private side_length = 40;
   private padding = 10;
   private border = 1;
   private offset = 0;
   private velocity = 0;
+  private acceleration = 0;
   private damping = 0.95;
-  private c = 0.2;
 
   private dragstart: number | null = null;
 
@@ -152,56 +160,102 @@ export class NavbarTwoComponent implements OnInit, OnDestroy {
     return delta_s;
   }
 
-  tickVelocity = (delta: number) => {
-    let absolute_dv = this.velocity * this.c;
-    let tick_dv = absolute_dv * delta;
-    this.velocity -= tick_dv;
-  };
-  tickPosition = (delta: number) => {
-    let tick_dx = this.velocity * delta;
-    this.offset += tick_dx;
-  };
   getLeftScrollLimit() {
-    let body_len = document.body.offsetWidth;
-    let zero_left = (body_len - this.getIconLength()) / 2;
-    let result = zero_left - this.offset;
+    let center = this.getCenter();
+    let zero_left = center - this.getIconLength() / 2;
     return zero_left;
   }
   getRightScrollLimit() {
     let num = this.site.getTestData().length;
     let length = num * this.getIconLength();
-    let body_len = document.body.offsetWidth;
-    let zero_right = (body_len + this.getIconLength()) / 2;
-    let result = zero_right - (this.offset + length);
+    let center = this.getCenter();
+    let zero_right = center + this.getIconLength() / 2;
+    let result = zero_right - length;
     return result;
   }
   getOverscroll() {
     let num = this.site.getTestData().length;
     let length = num * this.getIconLength();
-    let body_len = document.body.offsetWidth;
-    let zero_left = (body_len - this.getIconLength()) / 2;
-    let zero_right = (body_len + this.getIconLength()) / 2;
+    // let body_len = this.getContainerWidth();
+    // let zero_left = (body_len - this.getIconLength()) / 2;
+    // let zero_right = (body_len + this.getIconLength()) / 2;
+    let center = this.getCenter();
+    let zero_left = center - this.getIconLength() / 2;
+    let zero_right = center + this.getIconLength() / 2;
     let result = zero_left - this.offset;
     let result_2 = zero_right - (this.offset + length);
-    console.log(result + ', ' + result_2);
+    // console.log(result + ', ' + result_2);
     return [result, result_2];
     // return result;
+  }
+  getLeftOverscroll() {
+    let center = this.getCenter();
+    let zero_left = center - this.getIconLength() / 2;
+    let result = zero_left - this.offset;
+    return result;
+  }
+  getRightOverscroll() {
+    let num = this.site.getTestData().length;
+    let length = num * this.getIconLength();
+    let center = this.getCenter();
+    let zero_right = center + this.getIconLength() / 2;
+    let result = zero_right - (this.offset + length);
+    return result;
+  }
+  getOverscroll2() {
+    let left = this.getLeftOverscroll();
+    if (left < 0) return left;
+    let right = this.getRightOverscroll();
+    if (right > 0) return right;
+    return 0;
   }
   getBackgroundColor() {
     let [left_overscroll, right_overscroll] = this.getOverscroll();
     if (left_overscroll < 0 || right_overscroll > 0) return 'rgb(255,100,100)';
     return 'rgb(150,150,255)';
   }
+  getCenter() {
+    return this.getContainerWidth() / 2;
+  }
+  getContainerWidth() {
+    return this.container?.nativeElement?.offsetWidth ?? 0;
+  }
 
+  tickAcceleration = () => {
+    let overscroll = this.getOverscroll2();
+    console.log(overscroll);
+    this.acceleration += overscroll / 50;
+  };
+  tickVelocity = () => {
+    this.velocity += this.acceleration;
+    this.velocity *= this.damping;
+  };
+  tickPosition = () => {
+    let pre_overscroll = this.getOverscroll2();
+    this.offset += this.velocity;
+    let post_overscroll = this.getOverscroll2();
+    if (pre_overscroll !== post_overscroll && post_overscroll === 0) {
+      this.velocity = 0;
+      this.offset =
+        pre_overscroll < 0
+          ? this.getLeftScrollLimit()
+          : this.getRightScrollLimit();
+    }
+    this.acceleration = 0;
+  };
   // private timestamp = 0;
   tick = (time: number) => {
     this.tickPointer();
-    if (this.velocity !== 0) {
+    if (!this.dragstart) {
       // let delta = this.getDelta(this.timestamp, time);
       // this.timestamp = time;
-      this.offset += this.velocity;
-      this.velocity *= this.damping;
-      if (Math.abs(this.velocity) < 0.1) this.velocity = 0;
+      this.tickAcceleration();
+      this.tickVelocity();
+      this.tickPosition();
+      // this.velocity *= this.damping;
+      // this.offset += this.velocity;
+      if (this.velocity !== 0 && Math.abs(this.velocity) < 0.1)
+        this.velocity = 0;
     }
     this.getOverscroll();
     requestAnimationFrame(this.tick);
