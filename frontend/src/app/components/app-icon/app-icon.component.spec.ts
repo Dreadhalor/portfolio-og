@@ -8,9 +8,8 @@ describe('AppIconComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AppIconComponent ]
-    })
-    .compileComponents();
+      declarations: [AppIconComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

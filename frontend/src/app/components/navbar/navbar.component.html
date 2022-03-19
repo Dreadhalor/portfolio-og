@@ -1,8 +1,25 @@
 <div
-  class="w-full flex-row overflow-x-auto overflow-y-hidden bg-blue-400"
-  id="yep"
+  #container
+  class="relative w-full overflow-hidden bg-gray-100"
+  (pointerdown)="pointerdown($event)"
+  (wheel)="scrolled($event)"
+  [style.height.px]="getIconLength()"
 >
-  <div class="flex min-w-max flex-row">
-    <sh-app-icon *ngFor="let app of getTestData()" [app]="app"></sh-app-icon>
-  </div>
+  <div
+    class="absolute z-10 border-2 border-black"
+    [style.width.px]="getIconLength()"
+    [style.height.px]="getIconLength()"
+    [style.top.px]="0"
+    [style.left.px]="getLeftScrollLimit()"
+  ></div>
+  <sh-app-icon
+    *ngFor="let app of getData(); let i = index"
+    class="absolute"
+    [sideLength]="getSideLength()"
+    [padding]="getPadding()"
+    [border]="getBorder()"
+    [style.top.px]="0"
+    [style.left.px]="getCenter() + i * getIconLength() + getOffset()"
+    [style.transform]="getTransform(i)"
+  ></sh-app-icon>
 </div>
