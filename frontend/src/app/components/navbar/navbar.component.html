@@ -4,6 +4,7 @@
   (pointerdown)="pointerdown($event)"
   (wheel)="scrolled($event)"
   [style.height.px]="getIconLength()"
+  [style.perspective.px]="getPerspective()"
 >
   <div
     class="absolute z-10 border-2 border-black"
@@ -21,5 +22,7 @@
     [style.top.px]="0"
     [style.left.px]="getCenter() + i * getIconLength() + getOffset()"
     [style.transform]="getTransform(i)"
+    [style.filter]="getFilter(i)"
+    [style.z-index]="getZ(i)"
   ></sh-app-icon>
 </div>

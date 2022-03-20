@@ -20,20 +20,10 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   private side_length = 40;
   private padding = 10;
   private border = 1;
-
-  /////
-  private offset = 0;
-  private acceleration = 0;
-  private damping = 0.97;
-
-  private dragstart: number | null = null;
-
-  private currentMouseMove: PointerEvent | null = null;
-  private currentMouseTick: PointerEvent | null = null;
-  private lastMouseTick: PointerEvent | null = null;
-
-  private snapping = false;
-  /////
+  private perspective = 500;
+  getPerspective() {
+    return this.perspective;
+  }
 
   private physics: NavbarPhysics = new NavbarPhysics();
 
@@ -68,7 +58,7 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.border;
   }
   // getOffset() {
-  //   return this.offset;
+  //   return this.physics.getOffset();
   // }
   getOffset = () => this.physics.getOffset();
   getData() {
@@ -101,14 +91,18 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     return delta_s;
   }
 
+  getContentWidth() {
+    let num = this.site.getTestData().length;
+    let length = num * this.getIconLength();
+    return length;
+  }
   getLeftScrollLimit() {
     let center = this.getCenter();
     let zero_left = center - this.getIconLength() / 2;
     return zero_left;
   }
   getRightScrollLimit() {
-    let num = this.site.getTestData().length;
-    let length = num * this.getIconLength();
+    let length = this.getContentWidth();
     let center = this.getCenter();
     let zero_right = center + this.getIconLength() / 2;
     let result = zero_right - length;
@@ -118,7 +112,7 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   getLeftOverscroll() {
     let center = this.getCenter();
     let zero_left = center - this.getIconLength() / 2;
-    let result = zero_left - this.offset;
+    let result = zero_left - this.physics.getOffset();
     return result;
   }
   getRightOverscroll() {
@@ -126,7 +120,7 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     let length = num * this.getIconLength();
     let center = this.getCenter();
     let zero_right = center + this.getIconLength() / 2;
-    let result = zero_right - (this.offset + length);
+    let result = zero_right - (this.physics.getOffset() + length);
     return result;
   }
   getOverscroll() {
@@ -139,7 +133,7 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   getPointOverscroll(x_coord: number) {
     let center = this.getCenter();
     let normalized = center - x_coord;
-    let dist = normalized - this.offset;
+    let dist = normalized - this.physics.getOffset();
     return dist;
   }
   getCenter() {
@@ -150,13 +144,61 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   getScrollX() {
-    return this.getCenter() - this.offset;
+    return this.getCenter() - this.physics.getOffset();
   }
   setScrollX(x_coord: number) {
     this.physics.setOffset(x_coord);
   }
+  getSelectedIndex() {
+    let scroll_coord = this.physics.getOffset();
+    let anchors = this.getAnchors();
+    let index = anchors.findIndex((anchor) => anchor === scroll_coord);
+    // console.log(index);
+  }
 
+  getScrollDist(index: number) {
+    let scroll_x = this.physics.getOffset();
+    let index_x = index * this.getIconLength() + this.getIconLength() / 2;
+    return index_x + scroll_x;
+  }
+  getTranslate(dist: number) {
+    let z = `translateZ(${this.getTranslateZ(dist)}px)`;
+    let x = `translateX(${this.getTranslateX(dist)}px)`;
+    return `${x} ${z}`;
+  }
+  getTranslateZ(dist: number) {
+    // return (-Math.pow(dist, 2) / this.getContainerWidth()) * 2;
+    return -this.getK() * Math.pow(dist, 2);
+    // return -Math.abs(dist);
+  }
+  getK() {
+    // somewhat arbitrary value for excess, but I like it
+    let excess = this.margin + this.getIconLength();
+    let k = this.perspective / Math.pow(this.getContainerWidth() - excess, 2);
+    return k;
+  }
+  private margin = this.padding;
+  getTranslateX(dist: number) {
+    if (Math.abs(dist) > this.margin) return Math.sign(dist) * this.margin;
+    else return dist;
+  }
+  getFilter(index: number) {
+    let dist = this.getScrollDist(index);
+    let z = Math.abs(this.getTranslateZ(dist));
+    // let offset = Math.abs(dist);
+    // let blur = Math.pow(z, 2) / 1000000;
+    let blur = z / 100;
+    // console.log(blur);
+    return `blur(${blur}px)`;
+    // if (offset > this.margin) return `blur(${blur}px)`;
+    // return '';
+  }
+  getZ(index: number) {
+    let dist = Math.abs(this.getScrollDist(index));
+    return -Math.round(dist);
+  }
   getTransform(index: number) {
-    // console.log(th);
+    let dist = this.getScrollDist(index);
+    return `${this.getTranslate(dist)}`;
   }
 }
