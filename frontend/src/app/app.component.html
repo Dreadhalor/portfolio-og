@@ -1,3 +1,4 @@
 <div class="flex h-full flex-col">
-  <sh-navbar></sh-navbar>
+  <sh-navbar (selection)="setIndex($event)"></sh-navbar>
+  <sh-viewer class="flex-1" [index]="getIndex()"></sh-viewer>
 </div>

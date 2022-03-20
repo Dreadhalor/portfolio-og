@@ -2,8 +2,10 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  EventEmitter,
   OnDestroy,
   OnInit,
+  Output,
   ViewChild,
 } from '@angular/core';
 import { NavbarPhysics } from 'src/app/helpers/navbar-physics';
@@ -16,6 +18,7 @@ import { SiteService } from 'src/app/services/site.service';
 })
 export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('container') container!: ElementRef<HTMLDivElement>;
+  @Output('selection') selection = new EventEmitter<number>();
 
   private side_length = 40;
   private padding = 10;
@@ -25,15 +28,15 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.perspective;
   }
 
-  private physics: NavbarPhysics = new NavbarPhysics();
+  private physics: NavbarPhysics = new NavbarPhysics(this.site);
 
   constructor(private site: SiteService) {}
 
   ngOnInit(): void {
-    // requestAnimationFrame(this.tick);
-    requestAnimationFrame(this.physics.tick);
-    document.addEventListener('pointerup', this.physics.pointerup);
-    document.addEventListener('pointermove', this.physics.pointerMoved);
+    requestAnimationFrame(this.tick);
+    // requestAnimationFrame(this.physics.tick);
+    window.addEventListener('pointerup', this.physics.pointerup);
+    window.addEventListener('pointermove', this.physics.pointerMoved);
   }
   ngAfterViewInit(): void {
     let anchors = this.getAnchors();
@@ -41,9 +44,15 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     this.physics.setAnchors(anchors);
   }
   ngOnDestroy(): void {
-    document.removeEventListener('pointerup', this.physics.pointerup);
-    document.removeEventListener('pointermove', this.physics.pointerMoved);
+    window.removeEventListener('pointerup', this.physics.pointerup);
+    window.removeEventListener('pointermove', this.physics.pointerMoved);
   }
+
+  tick = () => {
+    this.physics.tick();
+    this.checkSelectedIndex();
+    requestAnimationFrame(this.tick);
+  };
 
   getSideLength() {
     return this.side_length;
@@ -57,9 +66,6 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   getBorder() {
     return this.border;
   }
-  // getOffset() {
-  //   return this.physics.getOffset();
-  // }
   getOffset = () => this.physics.getOffset();
   getData() {
     return this.site.getTestData();
@@ -73,14 +79,6 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     // console.log(anchors);
     return anchors;
   }
-
-  // queuePointerMove(event: PointerEvent | null) {
-  //   this.currentMouseMove = event;
-  // }
-  // tickPointer() {
-  //   this.lastMouseTick = this.currentMouseTick;
-  //   this.currentMouseTick = this.currentMouseMove;
-  // }
 
   pointerdown = (event: PointerEvent) => this.physics.pointerdown(event);
   scrolled = (event: WheelEvent) => this.physics.scrolled(event);
@@ -109,33 +107,6 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     return result;
   }
 
-  getLeftOverscroll() {
-    let center = this.getCenter();
-    let zero_left = center - this.getIconLength() / 2;
-    let result = zero_left - this.physics.getOffset();
-    return result;
-  }
-  getRightOverscroll() {
-    let num = this.site.getTestData().length;
-    let length = num * this.getIconLength();
-    let center = this.getCenter();
-    let zero_right = center + this.getIconLength() / 2;
-    let result = zero_right - (this.physics.getOffset() + length);
-    return result;
-  }
-  getOverscroll() {
-    let left = this.getLeftOverscroll();
-    if (left < 0) return left;
-    let right = this.getRightOverscroll();
-    if (right > 0) return right;
-    return 0;
-  }
-  getPointOverscroll(x_coord: number) {
-    let center = this.getCenter();
-    let normalized = center - x_coord;
-    let dist = normalized - this.physics.getOffset();
-    return dist;
-  }
   getCenter() {
     return this.getContainerWidth() / 2;
   }
@@ -149,11 +120,23 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   setScrollX(x_coord: number) {
     this.physics.setOffset(x_coord);
   }
+  private current_index: number | null = null;
+  checkSelectedIndex() {
+    let index = this.getSelectedIndex();
+    if (
+      index > -1 &&
+      this.current_index !== index &&
+      this.physics.isSelected()
+    ) {
+      this.current_index = index;
+      this.selection.emit(this.current_index);
+    }
+  }
   getSelectedIndex() {
     let scroll_coord = this.physics.getOffset();
     let anchors = this.getAnchors();
     let index = anchors.findIndex((anchor) => anchor === scroll_coord);
-    // console.log(index);
+    return index;
   }
 
   getScrollDist(index: number) {
@@ -187,8 +170,6 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     let z = Math.abs(this.getTranslateZ(dist));
     let blur = z / 100;
     return `blur(${blur}px)`;
-    // if (Math.abs(dist) > this.margin) return `blur(${blur}px)`;
-    // return '';
   }
   getZ(index: number) {
     let dist = Math.abs(this.getScrollDist(index));

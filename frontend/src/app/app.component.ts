@@ -7,4 +7,16 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'portfolio-site';
+
+  index = 0;
+  getIndex() {
+    return this.index;
+  }
+  setIndex(index: number) {
+    this.index = index;
+  }
+
+  // isNavigating() {
+  //   return false;
+  // }
 }

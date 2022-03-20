@@ -1,3 +1,6 @@
+import { EventEmitter } from '@angular/core';
+import { SiteService } from '../services/site.service';
+
 enum PhysicsState {
   POINTERCONTROL,
   FREEFALL,
@@ -25,6 +28,9 @@ export class NavbarPhysics {
       if (Math.abs(this.velocity) <= this.velocity_snap_start_limit)
         this.state = PhysicsState.SNAPPING;
     }
+  }
+  isSelected() {
+    return this.state === PhysicsState.SNAPPED;
   }
   private dragstart: number | null = null;
   private currentMouseMove: PointerEvent | null = null;
@@ -58,7 +64,7 @@ export class NavbarPhysics {
     return anchors[distances[0][1]];
   }
 
-  constructor() {}
+  constructor(private site: SiteService) {}
 
   move(offset: number) {
     this.offset += offset;
@@ -76,6 +82,7 @@ export class NavbarPhysics {
   pointerdown(event: PointerEvent) {
     this.state = PhysicsState.POINTERCONTROL;
     this.dragstart = event.clientX - this.offset;
+    this.site.setMousedown(true);
     this.velocity = 0;
   }
   pointerup = () => {
@@ -86,6 +93,7 @@ export class NavbarPhysics {
     }
     this.registerPointerMove(null);
     this.dragstart = null;
+    this.site.setMousedown(false);
   };
   pointerMoved = (event: PointerEvent) => {
     this.registerPointerMove(event);
@@ -97,7 +105,7 @@ export class NavbarPhysics {
     this.currentMouseMove = event;
   }
 
-  tick = (time: number) => {
+  tick = () => {
     this.tickPointer();
     this.checkState();
     switch (this.state) {
@@ -110,7 +118,7 @@ export class NavbarPhysics {
     }
     this.tickVelocity();
     this.tickPosition();
-    requestAnimationFrame(this.tick);
+    // requestAnimationFrame(this.tick);
   };
 
   tickPointer() {
@@ -146,6 +154,7 @@ export class NavbarPhysics {
           this.offset = anchor;
           this.velocity = 0;
           this.state = PhysicsState.SNAPPED;
+          // this.emitter?.next()
           return;
         }
       }

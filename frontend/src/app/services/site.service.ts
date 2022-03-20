@@ -6,18 +6,30 @@ import { Injectable } from '@angular/core';
 export class SiteService {
   public projects = [
     {
-      name: 'ascii-video',
-      url: 'https://ascii-video.glitch.me/',
-    },
-    {
       name: 'ScottHetrick.com',
       url: 'https://scotthetrick.com',
+    },
+    // {
+    //   name: 'ascii-video',
+    //   url: 'https://ascii-video.glitch.me/',
+    // },
+    {
+      name: 'NetWorth',
+      url: 'https://networth.cool',
     },
     {
       name: 'BetterMUN.com',
       url: 'https://bettermun.com',
     },
   ];
+
+  private mousedown = false;
+  setMousedown(mousedown: boolean) {
+    this.mousedown = mousedown;
+  }
+  getMousedown() {
+    return this.mousedown;
+  }
 
   private test_data = [
     'hi there',

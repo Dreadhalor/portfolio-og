@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { SafePipe } from 'src/app/pipes/safe.pipe';
 import { SiteService } from 'src/app/services/site.service';
 
@@ -10,14 +10,24 @@ import { SiteService } from 'src/app/services/site.service';
 export class ViewerComponent implements OnInit {
   constructor(private site: SiteService, private safe: SafePipe) {}
 
+  @Input('index') index: number | null = null;
+  @Input('disabled') disabled: boolean = false;
+
   ngOnInit(): void {}
+
+  getPointerEvents() {
+    return this.site.getMousedown() ? 'none' : 'auto';
+  }
 
   getProject() {
     let projects = this.site.projects;
-    let project = projects[1];
+    if (this.index === null || this.index >= this.site.projects.length)
+      return this.site.projects[0];
+    let project = projects[this.index];
     return project;
   }
   getProjectURL() {
+    if (this.index === null) return '';
     let project = this.getProject();
     let url = project.url;
     // let sanitizedURL = new SafePipe(url);
