@@ -1,7 +1,7 @@
-export enum PhysicsState {
+enum PhysicsState {
   POINTERCONTROL,
   FREEFALL,
-  // OVERSCROLLED,
+  OVERSCROLLED,
   SNAPPING,
   SNAPPED,
 }
@@ -64,7 +64,9 @@ export class NavbarPhysics {
     this.offset += offset;
   }
   scrolled = (event: WheelEvent) => {
-    this.state = PhysicsState.SNAPPING;
+    this.state = this.isOverscrolled()
+      ? PhysicsState.OVERSCROLLED
+      : PhysicsState.FREEFALL;
     let dx = -event.deltaX;
     let dy = -event.deltaY;
     let selected_delta = Math.abs(dx) > Math.abs(dy) ? dx : dy;
@@ -72,14 +74,14 @@ export class NavbarPhysics {
     this.move(selected_delta);
   };
   pointerdown(event: PointerEvent) {
-    console.log('pointer');
     this.state = PhysicsState.POINTERCONTROL;
     this.dragstart = event.clientX - this.offset;
     this.velocity = 0;
   }
   pointerup = () => {
     if (this.dragstart !== null) {
-      this.state = PhysicsState.FREEFALL;
+      if (this.isOverscrolled()) this.state = PhysicsState.OVERSCROLLED;
+      else this.state = PhysicsState.FREEFALL;
       this.setVelocity();
     }
     this.registerPointerMove(null);
@@ -87,9 +89,7 @@ export class NavbarPhysics {
   };
   pointerMoved = (event: PointerEvent) => {
     this.registerPointerMove(event);
-    // console.log(this.dragstart);
     if (this.dragstart !== null) {
-      // this.move(event.movementX);
       this.offset = event.clientX - this.dragstart;
     }
   };
@@ -101,6 +101,7 @@ export class NavbarPhysics {
     this.tickPointer();
     this.checkState();
     switch (this.state) {
+      case PhysicsState.OVERSCROLLED:
       case PhysicsState.SNAPPING: {
         let anchor = this.getNearestAnchor();
         this.acceleration = (anchor - this.offset) * this.snap_factor;
@@ -118,6 +119,7 @@ export class NavbarPhysics {
   }
   tickVelocity = () => {
     this.velocity *= this.damping;
+    if (this.state === PhysicsState.OVERSCROLLED) this.velocity *= this.damping;
     this.velocity += this.acceleration;
     if (
       this.velocity !== 0 &&
@@ -127,14 +129,20 @@ export class NavbarPhysics {
     this.acceleration = 0;
   };
   tickPosition = () => {
-    if (this.state === PhysicsState.SNAPPING) {
+    if (
+      this.state === PhysicsState.SNAPPING ||
+      this.state === PhysicsState.OVERSCROLLED
+    ) {
       let anchor = this.getNearestAnchor();
       let pre_dist = anchor - this.offset;
       let possible_offset = this.offset + this.velocity;
       let post_dist = anchor - possible_offset;
       if (Math.sign(pre_dist) !== Math.sign(post_dist)) {
         let dist = Math.abs(post_dist);
-        if (dist < this.velocity_snap_end_limit) {
+        if (
+          this.state === PhysicsState.OVERSCROLLED ||
+          dist < this.velocity_snap_end_limit
+        ) {
           this.offset = anchor;
           this.velocity = 0;
           this.state = PhysicsState.SNAPPED;
@@ -142,17 +150,20 @@ export class NavbarPhysics {
         }
       }
     }
-    // let pre_overscroll = this.getOverscroll2();
+    this.checkOverscroll();
     this.offset += this.velocity;
-    // let post_overscroll = this.getOverscroll2();
-    // if (pre_overscroll !== post_overscroll && post_overscroll === 0) {
-    //   this.velocity = 0;
-    //   this.offset =
-    //     pre_overscroll < 0
-    //       ? this.getLeftScrollLimit()
-    //       : this.getRightScrollLimit();
-    // }
   };
+  isOverscrolled() {
+    let overscrolled_left = this.offset > this.anchors[0];
+    let overscrolled_right =
+      this.offset < this.anchors[this.anchors.length - 1];
+    return overscrolled_left || overscrolled_right;
+  }
+  checkOverscroll() {
+    if (this.state !== PhysicsState.POINTERCONTROL && this.isOverscrolled()) {
+      this.state = PhysicsState.OVERSCROLLED;
+    }
+  }
 
   setVelocity = () => {
     if (this.dragstart !== null) this.velocity = this.calculateTickVelocity();

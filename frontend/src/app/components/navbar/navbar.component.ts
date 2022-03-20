@@ -185,12 +185,9 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   getFilter(index: number) {
     let dist = this.getScrollDist(index);
     let z = Math.abs(this.getTranslateZ(dist));
-    // let offset = Math.abs(dist);
-    // let blur = Math.pow(z, 2) / 1000000;
     let blur = z / 100;
-    // console.log(blur);
     return `blur(${blur}px)`;
-    // if (offset > this.margin) return `blur(${blur}px)`;
+    // if (Math.abs(dist) > this.margin) return `blur(${blur}px)`;
     // return '';
   }
   getZ(index: number) {
