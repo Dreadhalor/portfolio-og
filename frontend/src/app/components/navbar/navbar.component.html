@@ -1,6 +1,10 @@
 <div
+  [style.opacity]="getOpacity()"
+  class="pointer-events-none absolute left-0 right-0 top-0 bottom-0 bg-black transition-all duration-200"
+></div>
+<div
   #container
-  class="relative w-full overflow-hidden bg-gray-200"
+  class="relative w-full bg-transparent"
   (pointerdown)="pointerdown($event)"
   (wheel)="scrolled($event)"
   [style.height.px]="getIconLength()"
@@ -20,7 +24,7 @@
     [padding]="getPadding()"
     [border]="getBorder()"
     [style.top.px]="0"
-    [style.left.px]="getCenter() + i * getIconLength() + getOffset()"
+    [style.left.px]="getCenter() + i * getIconLength() + getScaledOffset()"
     [style.transform]="getTransform(i)"
     [style.filter]="getFilter(i)"
     [style.z-index]="getZ(i)"

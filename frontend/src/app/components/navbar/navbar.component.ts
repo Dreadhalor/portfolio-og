@@ -39,9 +39,9 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     window.addEventListener('pointermove', this.physics.pointerMoved);
   }
   ngAfterViewInit(): void {
-    let anchors = this.getAnchors();
+    let [anchors, range] = this.getAnchors();
     this.setScrollX(anchors[0]);
-    this.physics.setAnchors(anchors);
+    this.physics.setAnchors(anchors, range);
   }
   ngOnDestroy(): void {
     window.removeEventListener('pointerup', this.physics.pointerup);
@@ -53,12 +53,20 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     this.checkSelectedIndex();
     requestAnimationFrame(this.tick);
   };
+  // getMousedown = () => this.site.getMousedown();
+  getOpacity() {
+    if (!this.physics.isSelected())
+      // if (this.site.getMousedown() || this.physics.getVelocity() !== 0)
+      return 0.7;
+    return 0;
+  }
 
   getSideLength() {
+    // if (this.physics.isSelected()) return 10;
     return this.side_length;
   }
   getIconLength() {
-    return this.side_length + 2 * (this.padding + this.border);
+    return this.getSideLength() + 2 * (this.padding + this.border);
   }
   getPadding() {
     return this.padding;
@@ -67,17 +75,26 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.border;
   }
   getOffset = () => this.physics.getOffset();
+  getScaledOffset = () => this.physics.getScaledOffset();
   getData() {
     return this.site.getTestData();
   }
-  getAnchors() {
+  getAnchors(): [number[], number] {
     let data = this.getData();
     let lefts = data.map(
       (val: string, index: number) => index * this.getIconLength()
     );
     let anchors = lefts.map((x_coord) => -(x_coord + this.getIconLength() / 2));
+    let range = this.getRange(anchors);
+    anchors = anchors.map((anchor) => anchor / range);
     // console.log(anchors);
-    return anchors;
+    return [anchors, range];
+  }
+  getRange(anchors: number[]) {
+    let start = anchors[0];
+    let end = anchors[anchors.length - 1];
+    let range = Math.abs(end - start);
+    return range;
   }
 
   pointerdown = (event: PointerEvent) => this.physics.pointerdown(event);
@@ -134,23 +151,34 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   getSelectedIndex() {
     let scroll_coord = this.physics.getOffset();
-    let anchors = this.getAnchors();
+    let [anchors, range] = this.getAnchors();
     let index = anchors.findIndex((anchor) => anchor === scroll_coord);
     return index;
   }
 
   getScrollDist(index: number) {
-    let scroll_x = this.physics.getOffset();
+    let scroll_x = this.physics.getScaledOffset();
     let index_x = index * this.getIconLength() + this.getIconLength() / 2;
     return index_x + scroll_x;
   }
   getTranslate(dist: number) {
-    let z = `translateZ(${this.getTranslateZ(dist)}px)`;
     let x = `translateX(${this.getTranslateX(dist)}px)`;
+    let y = `translateY(${this.getTranslateY(dist)}px)`;
+    let z = `translateZ(${this.getTranslateZ(dist)}px)`;
     return `${x} ${z}`;
+    // return `${x} ${y} ${z}`;
+  }
+  private margin = this.padding;
+  getTranslateX(dist: number) {
+    if (Math.abs(dist) > this.margin) return Math.sign(dist) * this.margin;
+    else return dist;
+  }
+  getTranslateY(dist: number) {
+    return !this.physics.isSelected() ? 100 - Math.pow(Math.abs(dist), 0.5) : 0;
   }
   getTranslateZ(dist: number) {
     // return (-Math.pow(dist, 2) / this.getContainerWidth()) * 2;
+    // if (this.physics.isSelected()) return 0;
     return -this.getK() * Math.pow(dist, 2);
     // return -Math.abs(dist);
   }
@@ -159,11 +187,6 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     let excess = this.margin + this.getIconLength();
     let k = this.perspective / Math.pow(this.getContainerWidth() - excess, 2);
     return k;
-  }
-  private margin = this.padding;
-  getTranslateX(dist: number) {
-    if (Math.abs(dist) > this.margin) return Math.sign(dist) * this.margin;
-    else return dist;
   }
   getFilter(index: number) {
     let dist = this.getScrollDist(index);

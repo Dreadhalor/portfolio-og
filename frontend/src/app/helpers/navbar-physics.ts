@@ -19,7 +19,7 @@ export class NavbarPhysics {
   private damping = 0.97;
 
   //metadata
-  private state = PhysicsState.FREEFALL;
+  private state = PhysicsState.SNAPPED;
   getState() {
     return this.state;
   }
@@ -40,9 +40,16 @@ export class NavbarPhysics {
   //variables
   private acceleration = 0;
   private velocity = 0;
+  getVelocity() {
+    return this.velocity;
+  }
   private offset = 0;
   getOffset() {
     return this.offset;
+  }
+  getScaledOffset() {
+    // console.log('normalized ' + this.denormalize(this.offset));
+    return this.denormalize(this.offset);
   }
   setOffset(x_coord: number) {
     this.offset = x_coord;
@@ -50,8 +57,10 @@ export class NavbarPhysics {
 
   //anchors
   private anchors: number[] = [];
-  setAnchors(anchors: number[]) {
+  private range: number = 1;
+  setAnchors(anchors: number[], range: number) {
     this.anchors = anchors;
+    this.range = range;
   }
   getNearestAnchor() {
     let x = this.offset;
@@ -61,13 +70,23 @@ export class NavbarPhysics {
       index,
     ]);
     distances.sort((a, b) => a[0] - b[0]);
-    return anchors[distances[0][1]];
+    let result = anchors[distances[0][1]];
+    // console.log(result);
+    return result;
   }
 
   constructor(private site: SiteService) {}
 
+  normalize(x_coord: number) {
+    return x_coord / this.range;
+  }
+  denormalize(proportion: number) {
+    return proportion * this.range;
+  }
+
   move(offset: number) {
-    this.offset += offset;
+    this.offset += this.normalize(offset);
+    // this.offset += offset;
   }
   scrolled = (event: WheelEvent) => {
     this.state = this.isOverscrolled()
@@ -81,7 +100,11 @@ export class NavbarPhysics {
   };
   pointerdown(event: PointerEvent) {
     this.state = PhysicsState.POINTERCONTROL;
-    this.dragstart = event.clientX - this.offset;
+    // console.log('unnormalized: ' + event.clientX);
+    // console.log('normalized: ' + this.normalize(event.clientX));
+    // this.dragstart = event.clientX - this.offset;
+    this.dragstart = event.clientX;
+    // console.log(this.dragstart);
     this.site.setMousedown(true);
     this.velocity = 0;
   }
@@ -98,7 +121,10 @@ export class NavbarPhysics {
   pointerMoved = (event: PointerEvent) => {
     this.registerPointerMove(event);
     if (this.dragstart !== null) {
-      this.offset = event.clientX - this.dragstart;
+      // this.offset = event.clientX - this.dragstart;
+      // this.offset += this.normalize(event.clientX - this.dragstart);
+      this.offset += this.normalize(this.calculateTickVelocity());
+      console.log(this.offset);
     }
   };
   registerPointerMove(event: PointerEvent | null) {
@@ -108,16 +134,17 @@ export class NavbarPhysics {
   tick = () => {
     this.tickPointer();
     this.checkState();
-    switch (this.state) {
-      case PhysicsState.OVERSCROLLED:
-      case PhysicsState.SNAPPING: {
-        let anchor = this.getNearestAnchor();
-        this.acceleration = (anchor - this.offset) * this.snap_factor;
-        break;
-      }
-    }
+    // switch (this.state) {
+    //   case PhysicsState.OVERSCROLLED:
+    //   case PhysicsState.SNAPPING: {
+    //     let anchor = this.getNearestAnchor();
+    //     this.acceleration = (anchor - this.offset) * this.snap_factor;
+    //     break;
+    //   }
+    // }
     this.tickVelocity();
     this.tickPosition();
+    console.log(this.offset);
     // requestAnimationFrame(this.tick);
   };
 
@@ -145,7 +172,7 @@ export class NavbarPhysics {
       let pre_dist = anchor - this.offset;
       let possible_offset = this.offset + this.velocity;
       let post_dist = anchor - possible_offset;
-      if (Math.sign(pre_dist) !== Math.sign(post_dist)) {
+      if (post_dist === 0 || Math.sign(pre_dist) !== Math.sign(post_dist)) {
         let dist = Math.abs(post_dist);
         if (
           this.state === PhysicsState.OVERSCROLLED ||
@@ -154,7 +181,6 @@ export class NavbarPhysics {
           this.offset = anchor;
           this.velocity = 0;
           this.state = PhysicsState.SNAPPED;
-          // this.emitter?.next()
           return;
         }
       }
@@ -175,7 +201,9 @@ export class NavbarPhysics {
   }
 
   setVelocity = () => {
-    if (this.dragstart !== null) this.velocity = this.calculateTickVelocity();
+    // if (this.dragstart !== null) this.velocity = this.calculateTickVelocity();
+    if (this.dragstart !== null)
+      this.velocity = this.normalize(this.calculateTickVelocity());
   };
   calculateTickVelocity() {
     if (!this.currentMouseTick || !this.lastMouseTick) return 0;

@@ -15,8 +15,4 @@ export class AppComponent {
   setIndex(index: number) {
     this.index = index;
   }
-
-  // isNavigating() {
-  //   return false;
-  // }
 }
