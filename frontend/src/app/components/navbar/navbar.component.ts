@@ -8,6 +8,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
+import * as bezier from 'bezier-easing';
 import { NavbarPhysics } from 'src/app/helpers/navbar-physics';
 import { SiteService } from 'src/app/services/site.service';
 
@@ -24,17 +25,21 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   private padding = 10;
   private minified_scale = 0.4;
   private max_scale = 1;
-  private animation_scale = 0;
-  private scale_increment = 0.09;
-  incrementAnimation() {
+  private animation_timing_x = 0;
+  private timing_function = bezier(0.79, 0.09, 0.25, 1);
+  getKeyFrame() {
+    return this.timing_function(this.animation_timing_x);
+  }
+  private animation_seconds = 0.2;
+  incrementAnimation(delta: number) {
     let direction = !this.physics.isSelected();
     let result;
     if (direction) {
-      result = this.animation_scale + this.scale_increment;
-    } else result = this.animation_scale - this.scale_increment;
+      result = this.animation_timing_x + delta / this.animation_seconds;
+    } else result = this.animation_timing_x - delta / this.animation_seconds;
     if (result > 1) result = 1;
     if (result < 0) result = 0;
-    this.animation_scale = result;
+    this.animation_timing_x = result;
   }
   private border = 1;
   private perspective = 500;
@@ -65,7 +70,7 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     window.addEventListener('pointercancel', this.physics.pointerup);
   }
   getTransitionValue(start: number, end: number) {
-    return start + (end - start) * this.animation_scale;
+    return start + (end - start) * this.getKeyFrame();
   }
   getScale() {
     let scale = this.getTransitionValue(this.minified_scale, this.max_scale);
@@ -75,9 +80,17 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.site.getSnapped() ? 'none' : 'auto';
   }
 
-  tick = () => {
+  setDelta(timestamp: number) {
+    let delta = timestamp - this.timestamp;
+    this.timestamp = timestamp;
+    return delta / 1000;
+  }
+
+  private timestamp = 0;
+  tick = (time: number) => {
     this.physics.tick();
-    this.incrementAnimation();
+    let delta = this.setDelta(time);
+    this.incrementAnimation(delta);
     this.checkSelectedIndex();
     requestAnimationFrame(this.tick);
   };
@@ -117,7 +130,6 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
       (val: string, index: number) => index * this.getIconLength()
     );
     let anchors = lefts.map((x_coord) => -(x_coord + this.getIconLength() / 2));
-    // console.log(anchors);
     return anchors;
   }
 
@@ -206,12 +218,12 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   getTranslateY(dist: number) {
     // let result = (100 - Math.pow(Math.abs(dist), 0.1)) * this.animation_scale;
     // let result = (100 - Math.pow(Math.abs(dist), 0.1)) * this.animation_scale;
-    let result = 100 * this.animation_scale;
-    result -= (this.getIconLength() / 2) * (1 - this.getScale());
-    return result;
+    let result = 100 * this.getKeyFrame();
+    result += (this.getIconLength() / 2) * (1 - this.getScale());
+    return -1 * result;
   }
   getTranslateZ(dist: number) {
-    return -this.getK() * Math.pow(dist, 2) * this.animation_scale;
+    return -this.getK() * Math.pow(dist, 2) * this.getKeyFrame();
   }
   getK() {
     // somewhat arbitrary value for excess, but I like it
