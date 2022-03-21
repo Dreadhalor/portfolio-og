@@ -1,5 +1,7 @@
 <div
   class="absolute left-0 right-0 bottom-0 bg-gray-200"
+  (pointerdown)="pointerdown($event)"
+  (wheel)="scrolled($event)"
   [style.height.px]="getMinifiedIconLength()"
 ></div>
 <div
@@ -11,9 +13,7 @@
 ></div>
 <div
   #container
-  class="relative mx-auto bg-transparent"
-  (pointerdown)="pointerdown($event)"
-  (wheel)="scrolled($event)"
+  class="pointer-events-none relative mx-auto bg-transparent"
   style="width: min(100%, 600px)"
   [style.height.px]="getMinifiedIconLength()"
   [style.perspective.px]="getPerspective()"
