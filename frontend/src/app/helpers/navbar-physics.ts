@@ -16,7 +16,7 @@ export class NavbarPhysics {
   private velocity_zero_limit = 0;
   private velocity_snap_start_limit = 5;
   private velocity_snap_end_limit = 3;
-  private snap_factor = 0.02;
+  private k = 0.02;
   private damping = 0.97;
 
   //metadata
@@ -142,7 +142,7 @@ export class NavbarPhysics {
       case PhysicsState.OVERSCROLLED:
       case PhysicsState.SNAPPING: {
         let anchor = this.getNearestAnchor();
-        this.acceleration = (anchor - this.offset) * this.snap_factor;
+        this.acceleration = (anchor - this.offset) * this.k;
         break;
       }
     }

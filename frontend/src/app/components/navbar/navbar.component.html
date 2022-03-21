@@ -14,7 +14,7 @@
 <div
   #container
   class="pointer-events-none relative mx-auto bg-transparent"
-  style="width: min(100%, 600px)"
+  style="width: min(100%, 1000px)"
   [style.height.px]="getMinifiedIconLength()"
   [style.perspective.px]="getPerspective()"
 >
@@ -29,6 +29,7 @@
   <sh-app-icon
     *ngFor="let app of getData(); let i = index"
     class="absolute"
+    [app]="app"
     [sideLength]="getSideLength()"
     [padding]="getPadding()"
     [border]="getBorder()"

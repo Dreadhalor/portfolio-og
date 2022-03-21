@@ -9,6 +9,12 @@ export class AppIconComponent implements OnInit {
   @Input('sideLength') side_length = 10;
   @Input('padding') padding = 10;
   @Input('border') border = 10;
+  @Input('app') app: string | null = null;
+
+  private gap = 10;
+  getGap() {
+    return this.gap;
+  }
 
   constructor() {}
 
@@ -22,5 +28,9 @@ export class AppIconComponent implements OnInit {
   }
   getBorder() {
     return `${this.border}px solid white`;
+  }
+
+  getTitle() {
+    return this.app ?? 'ddd';
   }
 }

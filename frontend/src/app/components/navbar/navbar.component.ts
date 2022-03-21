@@ -27,7 +27,9 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   private minified_scale = this.minified_side_length / this.side_length;
   private max_scale = 1;
   private animation_timing_x = 0;
-  private timing_function = bezier(0.79, 0.09, 0.25, 1);
+  //to prevent animation stuttering when loading between apps
+  private max_delta = 1 / 60; //60fps
+  private timing_function = bezier(0.42, 0, 0.58, 1); //ease-in-out
   getKeyFrame() {
     return this.timing_function(this.animation_timing_x);
   }
@@ -35,9 +37,10 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   incrementAnimation(delta: number) {
     let direction = !this.physics.isSelected();
     let result;
+    let increment = Math.min(delta, this.max_delta) / this.animation_seconds;
     if (direction) {
-      result = this.animation_timing_x + delta / this.animation_seconds;
-    } else result = this.animation_timing_x - delta / this.animation_seconds;
+      result = this.animation_timing_x + increment;
+    } else result = this.animation_timing_x - increment;
     if (result > 1) result = 1;
     if (result < 0) result = 0;
     this.animation_timing_x = result;

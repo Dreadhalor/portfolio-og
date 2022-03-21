@@ -1,12 +1,19 @@
 <div
-  class="flex border border-white bg-red-400"
+  class="relative flex border border-white bg-red-400"
   [style.padding.px]="getPadding()"
   [style.border]="getBorder()"
 >
   <div
-    class="transition-all"
     [style.width.px]="getSideLength()"
     [style.height.px]="getSideLength()"
     [style.border]="getBorder()"
   ></div>
+  <div
+    class="absolute left-0 right-0 bottom-full flex content-center bg-green-300"
+  >
+    <span class="text-center" [style.margin-bottom.px]="getGap()">{{
+      getTitle()
+    }}</span>
+    <!-- {{ getTitle() }} -->
+  </div>
 </div>
