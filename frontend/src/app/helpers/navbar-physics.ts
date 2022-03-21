@@ -6,6 +6,7 @@ enum PhysicsState {
   FREEFALL,
   OVERSCROLLED,
   SNAPPING,
+  DEBOUNCING,
   SNAPPED,
 }
 
@@ -31,10 +32,17 @@ export class NavbarPhysics {
   getState() {
     return this.state;
   }
-  checkState() {
+  checkState(delta: number) {
     if (this.state === PhysicsState.FREEFALL) {
       if (Math.abs(this.velocity) <= this.velocity_snap_start_limit)
         this.state = PhysicsState.SNAPPING;
+    } else if (this.state === PhysicsState.DEBOUNCING) {
+      if (this.debounce_counter < 0) this.debounce_counter = 0;
+      this.debounce_counter += delta;
+      if (this.debounce_counter > this.snap_debounce_time) {
+        this.debounce_counter = 0;
+        this.state = PhysicsState.SNAPPED;
+      }
     }
   }
   isSelected() {
@@ -95,7 +103,7 @@ export class NavbarPhysics {
   pointerdown(event: PointerEvent) {
     this.state = PhysicsState.POINTERCONTROL;
     this.dragstart = event.clientX - this.offset;
-    // this.site.setSnapped(true);
+    this.debounce_counter = 0;
     this.velocity = 0;
   }
   pointerup = () => {
@@ -106,7 +114,6 @@ export class NavbarPhysics {
     }
     this.registerPointerMove(null);
     this.dragstart = null;
-    // this.site.setSnapped(false);
   };
   pointerMoved = (event: PointerEvent) => {
     this.registerPointerMove(event);
@@ -118,9 +125,19 @@ export class NavbarPhysics {
     this.currentMouseMove = event;
   }
 
-  tick = () => {
+  setDelta(timestamp: number) {
+    let delta = timestamp - this.timestamp;
+    this.timestamp = timestamp;
+    return delta / 1000;
+  }
+  private timestamp = 0;
+  private debounce_counter = 0;
+  private snap_debounce_time = 0.3;
+
+  tick = (time: number) => {
     this.tickPointer();
-    this.checkState();
+    let delta = this.setDelta(time);
+    this.checkState(delta);
     switch (this.state) {
       case PhysicsState.OVERSCROLLED:
       case PhysicsState.SNAPPING: {
@@ -165,8 +182,12 @@ export class NavbarPhysics {
           dist < this.velocity_snap_end_limit
         ) {
           this.offset = anchor;
-          this.velocity = 0;
-          this.state = PhysicsState.SNAPPED;
+          //if velocity === 0 the user must have just tapped the navbar & not scrolled, so skip debouncing for a smoother experience
+          if (this.velocity === 0) this.state = PhysicsState.SNAPPED;
+          else {
+            this.velocity = 0;
+            this.state = PhysicsState.DEBOUNCING;
+          }
           return;
         }
       }

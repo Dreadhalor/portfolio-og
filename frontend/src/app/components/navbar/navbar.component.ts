@@ -22,8 +22,9 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   @Output('selection') selection = new EventEmitter<number>();
 
   private side_length = 40;
+  private minified_side_length = 15;
   private padding = 10;
-  private minified_scale = 0.4;
+  private minified_scale = this.minified_side_length / this.side_length;
   private max_scale = 1;
   private animation_timing_x = 0;
   private timing_function = bezier(0.79, 0.09, 0.25, 1);
@@ -46,6 +47,7 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   getPerspective() {
     return this.perspective;
   }
+  private scrolling_y_offset = 120;
 
   private physics: NavbarPhysics = new NavbarPhysics(this.site);
 
@@ -88,7 +90,7 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private timestamp = 0;
   tick = (time: number) => {
-    this.physics.tick();
+    this.physics.tick(time);
     let delta = this.setDelta(time);
     this.incrementAnimation(delta);
     this.checkSelectedIndex();
@@ -216,9 +218,7 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     return result;
   }
   getTranslateY(dist: number) {
-    // let result = (100 - Math.pow(Math.abs(dist), 0.1)) * this.animation_scale;
-    // let result = (100 - Math.pow(Math.abs(dist), 0.1)) * this.animation_scale;
-    let result = 100 * this.getKeyFrame();
+    let result = this.scrolling_y_offset * this.getKeyFrame();
     result += (this.getIconLength() / 2) * (1 - this.getScale());
     return -1 * result;
   }
