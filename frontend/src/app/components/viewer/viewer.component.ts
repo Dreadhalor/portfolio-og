@@ -16,7 +16,7 @@ export class ViewerComponent implements OnInit {
   ngOnInit(): void {}
 
   getPointerEvents() {
-    return this.site.getMousedown() ? 'none' : 'auto';
+    return this.site.getSnapped() ? 'auto' : 'none';
   }
 
   getProject() {

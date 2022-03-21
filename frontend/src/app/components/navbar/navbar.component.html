@@ -1,13 +1,21 @@
 <div
+  class="absolute left-0 right-0 bg-gray-200"
+  [style.height.px]="getMinifiedIconLength()"
+></div>
+<div
   [style.opacity]="getOpacity()"
-  class="pointer-events-none absolute left-0 right-0 top-0 bottom-0 bg-black transition-all duration-200"
+  (pointerdown)="pointerdown($event)"
+  (wheel)="scrolled($event)"
+  [style.pointer-events]="getOverlayPointerEvents()"
+  class="absolute left-0 right-0 top-0 bottom-0 bg-black transition-all duration-200"
 ></div>
 <div
   #container
-  class="relative w-full bg-transparent"
+  class="relative mx-auto bg-transparent"
   (pointerdown)="pointerdown($event)"
   (wheel)="scrolled($event)"
-  [style.height.px]="getIconLength()"
+  style="width: min(100%, 600px)"
+  [style.height.px]="getMinifiedIconLength()"
   [style.perspective.px]="getPerspective()"
 >
   <div
@@ -16,6 +24,7 @@
     [style.height.px]="getIconLength()"
     [style.top.px]="0"
     [style.left.px]="getLeftScrollLimit()"
+    [style.transform]="getMiddleTransform()"
   ></div>
   <sh-app-icon
     *ngFor="let app of getData(); let i = index"
@@ -24,9 +33,9 @@
     [padding]="getPadding()"
     [border]="getBorder()"
     [style.top.px]="0"
-    [style.left.px]="getCenter() + i * getIconLength() + getScaledOffset()"
+    [style.left.px]="getCenter() + i * getIconLength() + getOffset()"
     [style.transform]="getTransform(i)"
     [style.filter]="getFilter(i)"
-    [style.z-index]="getZ(i)"
+    [style.z-index]="getZIndex(i)"
   ></sh-app-icon>
 </div>

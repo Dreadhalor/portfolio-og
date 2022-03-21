@@ -22,6 +22,20 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private side_length = 40;
   private padding = 10;
+  private minified_scale = 0.4;
+  private max_scale = 1;
+  private animation_scale = 0;
+  private scale_increment = 0.09;
+  incrementAnimation() {
+    let direction = !this.physics.isSelected();
+    let result;
+    if (direction) {
+      result = this.animation_scale + this.scale_increment;
+    } else result = this.animation_scale - this.scale_increment;
+    if (result > 1) result = 1;
+    if (result < 0) result = 0;
+    this.animation_scale = result;
+  }
   private border = 1;
   private perspective = 500;
   getPerspective() {
@@ -37,19 +51,33 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     // requestAnimationFrame(this.physics.tick);
     window.addEventListener('pointerup', this.physics.pointerup);
     window.addEventListener('pointermove', this.physics.pointerMoved);
+    //for when swiping on the navbar accidentally opens a multitasking menu or some shit, cancel the drag
+    window.addEventListener('pointercancel', this.physics.pointerup);
   }
   ngAfterViewInit(): void {
-    let [anchors, range] = this.getAnchors();
+    let anchors = this.getAnchors();
     this.setScrollX(anchors[0]);
-    this.physics.setAnchors(anchors, range);
+    this.physics.setAnchors(anchors);
   }
   ngOnDestroy(): void {
     window.removeEventListener('pointerup', this.physics.pointerup);
     window.removeEventListener('pointermove', this.physics.pointerMoved);
+    window.addEventListener('pointercancel', this.physics.pointerup);
+  }
+  getTransitionValue(start: number, end: number) {
+    return start + (end - start) * this.animation_scale;
+  }
+  getScale() {
+    let scale = this.getTransitionValue(this.minified_scale, this.max_scale);
+    return scale;
+  }
+  getOverlayPointerEvents() {
+    return this.site.getSnapped() ? 'none' : 'auto';
   }
 
   tick = () => {
     this.physics.tick();
+    this.incrementAnimation();
     this.checkSelectedIndex();
     requestAnimationFrame(this.tick);
   };
@@ -62,11 +90,16 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   getSideLength() {
-    // if (this.physics.isSelected()) return 10;
     return this.side_length;
   }
   getIconLength() {
     return this.getSideLength() + 2 * (this.padding + this.border);
+  }
+  getMinifiedIconLength() {
+    return (
+      (this.getSideLength() + 2 * (this.padding + this.border)) *
+      this.minified_scale
+    );
   }
   getPadding() {
     return this.padding;
@@ -75,36 +108,21 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.border;
   }
   getOffset = () => this.physics.getOffset();
-  getScaledOffset = () => this.physics.getScaledOffset();
   getData() {
     return this.site.getTestData();
   }
-  getAnchors(): [number[], number] {
+  getAnchors() {
     let data = this.getData();
     let lefts = data.map(
       (val: string, index: number) => index * this.getIconLength()
     );
     let anchors = lefts.map((x_coord) => -(x_coord + this.getIconLength() / 2));
-    let range = this.getRange(anchors);
-    anchors = anchors.map((anchor) => anchor / range);
     // console.log(anchors);
-    return [anchors, range];
-  }
-  getRange(anchors: number[]) {
-    let start = anchors[0];
-    let end = anchors[anchors.length - 1];
-    let range = Math.abs(end - start);
-    return range;
+    return anchors;
   }
 
   pointerdown = (event: PointerEvent) => this.physics.pointerdown(event);
   scrolled = (event: WheelEvent) => this.physics.scrolled(event);
-
-  getDelta(t1: number, t2: number) {
-    let delta_ms = t2 - t1;
-    let delta_s = delta_ms / 1000;
-    return delta_s;
-  }
 
   getContentWidth() {
     let num = this.site.getTestData().length;
@@ -151,36 +169,49 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   getSelectedIndex() {
     let scroll_coord = this.physics.getOffset();
-    let [anchors, range] = this.getAnchors();
+    let anchors = this.getAnchors();
     let index = anchors.findIndex((anchor) => anchor === scroll_coord);
     return index;
   }
 
   getScrollDist(index: number) {
-    let scroll_x = this.physics.getScaledOffset();
+    let scroll_x = this.physics.getOffset();
     let index_x = index * this.getIconLength() + this.getIconLength() / 2;
     return index_x + scroll_x;
   }
+  getMiddleScrollDist() {
+    let scroll_x = this.physics.getOffset() + this.getIconLength() / 2;
+    // let index_x = index * this.getIconLength() + this.getIconLength() / 2;
+    // return index_x + scroll_x;
+    return scroll_x;
+  }
   getTranslate(dist: number) {
-    let x = `translateX(${this.getTranslateX(dist)}px)`;
-    let y = `translateY(${this.getTranslateY(dist)}px)`;
-    let z = `translateZ(${this.getTranslateZ(dist)}px)`;
-    return `${x} ${z}`;
-    // return `${x} ${y} ${z}`;
+    // let x = `translateX(${this.getTranslateX(dist)}px)`;
+    // let y = `translateY(${this.getTranslateY(dist)}px)`;
+    // let z = `translateZ(${this.getTranslateZ(dist)}px)`;
+    let x = `${this.getTranslateX(dist)}px`;
+    let y = `${this.getTranslateY(dist)}px`;
+    let z = `${this.getTranslateZ(dist)}px`;
+    // return `${x} ${z}`;
+    return `translate3d(${x}, ${y}, ${z})`;
   }
   private margin = this.padding;
   getTranslateX(dist: number) {
-    if (Math.abs(dist) > this.margin) return Math.sign(dist) * this.margin;
-    else return dist;
+    let result = 0;
+    if (Math.abs(dist) > this.margin) result += Math.sign(dist) * this.margin;
+    else result += dist;
+    result -= dist * (1 - this.getScale());
+    return result;
   }
   getTranslateY(dist: number) {
-    return !this.physics.isSelected() ? 100 - Math.pow(Math.abs(dist), 0.5) : 0;
+    // let result = (100 - Math.pow(Math.abs(dist), 0.1)) * this.animation_scale;
+    // let result = (100 - Math.pow(Math.abs(dist), 0.1)) * this.animation_scale;
+    let result = 100 * this.animation_scale;
+    result -= (this.getIconLength() / 2) * (1 - this.getScale());
+    return result;
   }
   getTranslateZ(dist: number) {
-    // return (-Math.pow(dist, 2) / this.getContainerWidth()) * 2;
-    // if (this.physics.isSelected()) return 0;
-    return -this.getK() * Math.pow(dist, 2);
-    // return -Math.abs(dist);
+    return -this.getK() * Math.pow(dist, 2) * this.animation_scale;
   }
   getK() {
     // somewhat arbitrary value for excess, but I like it
@@ -194,12 +225,20 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     let blur = z / 100;
     return `blur(${blur}px)`;
   }
-  getZ(index: number) {
+  getZIndex(index: number) {
     let dist = Math.abs(this.getScrollDist(index));
     return -Math.round(dist);
   }
   getTransform(index: number) {
     let dist = this.getScrollDist(index);
-    return `${this.getTranslate(dist)}`;
+    // let scale = this.physics.isSelected() ? `scale(${this.getScale()})` : '';
+    let scale = `scale(${this.getScale()})`;
+    return `${this.getTranslate(dist)} ${scale}`;
+  }
+  getMiddleTransform() {
+    let scale = `scale(${this.getScale()})`;
+    let y = `translateY(${this.getTranslateY(0)}px)`;
+    // return `${this.getTranslate(dist)} ${scale}`;
+    return `${y} ${scale}`;
   }
 }

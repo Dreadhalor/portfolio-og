@@ -19,7 +19,15 @@ export class NavbarPhysics {
   private damping = 0.97;
 
   //metadata
-  private state = PhysicsState.SNAPPED;
+  private _state = PhysicsState.SNAPPED;
+  get state() {
+    return this._state;
+  }
+  set state(state: PhysicsState) {
+    if (state === PhysicsState.SNAPPED) this.site.setSnapped(true);
+    else this.site.setSnapped(false);
+    this._state = state;
+  }
   getState() {
     return this.state;
   }
@@ -47,20 +55,14 @@ export class NavbarPhysics {
   getOffset() {
     return this.offset;
   }
-  getScaledOffset() {
-    // console.log('normalized ' + this.denormalize(this.offset));
-    return this.denormalize(this.offset);
-  }
   setOffset(x_coord: number) {
     this.offset = x_coord;
   }
 
   //anchors
   private anchors: number[] = [];
-  private range: number = 1;
-  setAnchors(anchors: number[], range: number) {
+  setAnchors(anchors: number[]) {
     this.anchors = anchors;
-    this.range = range;
   }
   getNearestAnchor() {
     let x = this.offset;
@@ -70,23 +72,15 @@ export class NavbarPhysics {
       index,
     ]);
     distances.sort((a, b) => a[0] - b[0]);
-    let result = anchors[distances[0][1]];
-    // console.log(result);
-    return result;
+    return anchors[distances[0][1]];
   }
 
-  constructor(private site: SiteService) {}
-
-  normalize(x_coord: number) {
-    return x_coord / this.range;
-  }
-  denormalize(proportion: number) {
-    return proportion * this.range;
+  constructor(private site: SiteService) {
+    this.state = PhysicsState.SNAPPED;
   }
 
   move(offset: number) {
-    this.offset += this.normalize(offset);
-    // this.offset += offset;
+    this.offset += offset;
   }
   scrolled = (event: WheelEvent) => {
     this.state = this.isOverscrolled()
@@ -100,12 +94,8 @@ export class NavbarPhysics {
   };
   pointerdown(event: PointerEvent) {
     this.state = PhysicsState.POINTERCONTROL;
-    // console.log('unnormalized: ' + event.clientX);
-    // console.log('normalized: ' + this.normalize(event.clientX));
-    // this.dragstart = event.clientX - this.offset;
-    this.dragstart = event.clientX;
-    // console.log(this.dragstart);
-    this.site.setMousedown(true);
+    this.dragstart = event.clientX - this.offset;
+    // this.site.setSnapped(true);
     this.velocity = 0;
   }
   pointerup = () => {
@@ -116,15 +106,12 @@ export class NavbarPhysics {
     }
     this.registerPointerMove(null);
     this.dragstart = null;
-    this.site.setMousedown(false);
+    // this.site.setSnapped(false);
   };
   pointerMoved = (event: PointerEvent) => {
     this.registerPointerMove(event);
     if (this.dragstart !== null) {
-      // this.offset = event.clientX - this.dragstart;
-      // this.offset += this.normalize(event.clientX - this.dragstart);
-      this.offset += this.normalize(this.calculateTickVelocity());
-      console.log(this.offset);
+      this.offset = event.clientX - this.dragstart;
     }
   };
   registerPointerMove(event: PointerEvent | null) {
@@ -134,17 +121,16 @@ export class NavbarPhysics {
   tick = () => {
     this.tickPointer();
     this.checkState();
-    // switch (this.state) {
-    //   case PhysicsState.OVERSCROLLED:
-    //   case PhysicsState.SNAPPING: {
-    //     let anchor = this.getNearestAnchor();
-    //     this.acceleration = (anchor - this.offset) * this.snap_factor;
-    //     break;
-    //   }
-    // }
+    switch (this.state) {
+      case PhysicsState.OVERSCROLLED:
+      case PhysicsState.SNAPPING: {
+        let anchor = this.getNearestAnchor();
+        this.acceleration = (anchor - this.offset) * this.snap_factor;
+        break;
+      }
+    }
     this.tickVelocity();
     this.tickPosition();
-    console.log(this.offset);
     // requestAnimationFrame(this.tick);
   };
 
@@ -201,9 +187,7 @@ export class NavbarPhysics {
   }
 
   setVelocity = () => {
-    // if (this.dragstart !== null) this.velocity = this.calculateTickVelocity();
-    if (this.dragstart !== null)
-      this.velocity = this.normalize(this.calculateTickVelocity());
+    if (this.dragstart !== null) this.velocity = this.calculateTickVelocity();
   };
   calculateTickVelocity() {
     if (!this.currentMouseTick || !this.lastMouseTick) return 0;

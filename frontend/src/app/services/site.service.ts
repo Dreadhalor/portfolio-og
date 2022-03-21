@@ -23,12 +23,12 @@ export class SiteService {
     },
   ];
 
-  private mousedown = false;
-  setMousedown(mousedown: boolean) {
-    this.mousedown = mousedown;
+  private snapped = false;
+  setSnapped(snapped: boolean) {
+    this.snapped = snapped;
   }
-  getMousedown() {
-    return this.mousedown;
+  getSnapped() {
+    return this.snapped;
   }
 
   private test_data = [
