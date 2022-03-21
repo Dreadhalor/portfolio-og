@@ -23,7 +23,7 @@ export class AppIconComponent implements OnInit {
   }
 
   getIconLength() {
-    return this.side_length + this.padding * 2;
+    return this.side_length;
   }
 
   getOpacity() {
@@ -45,6 +45,6 @@ export class AppIconComponent implements OnInit {
   }
 
   getTitle() {
-    return this.app ?? 'ddd';
+    return this.app ?? '';
   }
 }

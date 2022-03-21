@@ -16,7 +16,7 @@
 <div
   #container
   class="pointer-events-none relative mx-auto bg-transparent"
-  style="width: min(100%, 800px)"
+  style="width: min(100%, 8000px)"
   [style.height.px]="getMinifiedIconLength()"
   [style.perspective.px]="getPerspective()"
 >
@@ -24,7 +24,7 @@
     class="absolute z-10 rounded-lg border-2 border-black"
     [style.width.px]="getIconLength()"
     [style.height.px]="getIconLength()"
-    [style.top.px]="0"
+    [style.bottom.px]="getBottom()"
     [style.left.px]="getLeftScrollLimit()"
     [style.transform]="getMiddleTransform()"
   ></div>
@@ -37,7 +37,7 @@
     [border]="getBorder()"
     [centerOffset]="getScrollDist(i)"
     [hideDescription]="isSelected()"
-    [style.top.px]="0"
+    [style.bottom.px]="getBottom()"
     [style.left.px]="getCenter() + i * getIconLength() + getOffset()"
     [style.transform]="getTransform(i)"
     [style.filter]="getFilter(i)"

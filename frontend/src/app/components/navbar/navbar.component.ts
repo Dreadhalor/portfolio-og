@@ -21,12 +21,13 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('container') container!: ElementRef<HTMLDivElement>;
   @Output('selection') selection = new EventEmitter<number>();
 
-  private side_length = 40;
-  private minified_side_length = 15;
+  private side_length = 80;
+  private minified_side_length = 30;
   private padding = 10;
   private minified_scale = this.minified_side_length / this.side_length;
   private max_scale = 1;
   private animation_timing_x = 0;
+  private scrolling_y_offset = 80;
   //to prevent animation stuttering when loading between apps
   private max_delta = 1 / 60; //60fps
   private timing_function = bezier(0.42, 0, 0.58, 1); //ease-in-out
@@ -50,7 +51,6 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   getPerspective() {
     return this.perspective;
   }
-  private scrolling_y_offset = 120;
 
   private physics: NavbarPhysics = new NavbarPhysics(this.site);
 
@@ -108,13 +108,15 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.side_length;
   }
   getIconLength() {
-    return this.getSideLength() + 2 * (this.padding + this.border);
+    // return this.getSideLength() + 2 * (this.padding + this.border);
+    return this.getSideLength();
   }
   getMinifiedIconLength() {
-    return (
-      (this.getSideLength() + 2 * (this.padding + this.border)) *
-      this.minified_scale
-    );
+    // return (
+    //   (this.getSideLength() + 2 * (this.padding + this.border)) *
+    //   this.minified_scale
+    // );
+    return this.minified_side_length;
   }
   getPadding() {
     return this.padding;
@@ -195,13 +197,10 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     return index_x + scroll_x;
   }
   getTranslate(dist: number) {
-    // let x = `translateX(${this.getTranslateX(dist)}px)`;
-    // let y = `translateY(${this.getTranslateY(dist)}px)`;
-    // let z = `translateZ(${this.getTranslateZ(dist)}px)`;
     let x = `${this.getTranslateX(dist)}px`;
     let y = `${this.getTranslateY(dist)}px`;
     let z = `${this.getTranslateZ(dist)}px`;
-    // return `${x} ${z}`;
+    // return `translate3d(${x}, 0px, ${z})`;
     return `translate3d(${x}, ${y}, ${z})`;
   }
   private margin = this.padding;
@@ -212,9 +211,14 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     result -= dist * (1 - this.getScale());
     return result;
   }
+  getBottom() {
+    return -(this.getIconLength() / 2) * (1 - this.getScale());
+  }
   getTranslateY(dist: number) {
-    let result = this.scrolling_y_offset * this.getKeyFrame();
-    result += (this.getIconLength() / 2) * (1 - this.getScale());
+    let result = 0;
+    result += this.scrolling_y_offset * this.getKeyFrame();
+    // result += this.getIconLength();
+    // result += (this.getIconLength() / 2) * (1 - this.getScale());
     return -1 * result;
   }
   getTranslateZ(dist: number) {

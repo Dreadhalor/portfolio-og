@@ -2,12 +2,10 @@
   class="relative flex rounded-lg border border-white bg-red-400"
   [style.padding.px]="getPadding()"
   [style.border]="getBorder()"
+  [style.width.px]="getSideLength()"
+  [style.height.px]="getSideLength()"
 >
-  <div
-    [style.width.px]="getSideLength()"
-    [style.height.px]="getSideLength()"
-    [style.border]="getBorder()"
-  ></div>
+  <div class="flex-1" [style.border]="getBorder()"></div>
   <div
     class="absolute flex flex-col gap-3 rounded-lg bg-black p-3 text-center text-white shadow-lg duration-200"
     [style.width.px]="getDescriptionWidth()"
