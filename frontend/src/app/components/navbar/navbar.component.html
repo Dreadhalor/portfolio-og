@@ -9,17 +9,19 @@
   (pointerdown)="pointerdown($event)"
   (wheel)="scrolled($event)"
   [style.pointer-events]="getOverlayPointerEvents()"
-  class="absolute top-0 bottom-0 right-0 left-0 bg-black transition-all duration-200"
-></div>
+  class="absolute top-0 bottom-0 right-0 left-0 flex bg-black transition-all duration-200"
+>
+  <!-- <div class="m-auto"><span class="bg-green-500">fd</span>></div> -->
+</div>
 <div
   #container
   class="pointer-events-none relative mx-auto bg-transparent"
-  style="width: min(100%, 1000px)"
+  style="width: min(100%, 800px)"
   [style.height.px]="getMinifiedIconLength()"
   [style.perspective.px]="getPerspective()"
 >
   <div
-    class="absolute z-10 border-2 border-black"
+    class="absolute z-10 rounded-lg border-2 border-black"
     [style.width.px]="getIconLength()"
     [style.height.px]="getIconLength()"
     [style.top.px]="0"
@@ -33,6 +35,8 @@
     [sideLength]="getSideLength()"
     [padding]="getPadding()"
     [border]="getBorder()"
+    [centerOffset]="getScrollDist(i)"
+    [hideDescription]="isSelected()"
     [style.top.px]="0"
     [style.left.px]="getCenter() + i * getIconLength() + getOffset()"
     [style.transform]="getTransform(i)"

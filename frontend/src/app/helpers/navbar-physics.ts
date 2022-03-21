@@ -97,8 +97,9 @@ export class NavbarPhysics {
     let dx = -event.deltaX;
     let dy = -event.deltaY;
     let selected_delta = Math.abs(dx) > Math.abs(dy) ? dx : dy;
-    this.velocity = 0;
-    this.move(selected_delta);
+    // this.velocity = 0;
+    this.velocity = selected_delta;
+    this.move(selected_delta / 2);
   };
   pointerdown(event: PointerEvent) {
     this.state = PhysicsState.POINTERCONTROL;

@@ -10,10 +10,24 @@ export class AppIconComponent implements OnInit {
   @Input('padding') padding = 10;
   @Input('border') border = 10;
   @Input('app') app: string | null = null;
+  @Input('centerOffset') center_offset = 0;
+  @Input('hideDescription') hide_description = false;
 
-  private gap = 10;
+  getDescriptionWidth() {
+    return 120;
+  }
+
+  private gap = 20;
   getGap() {
     return this.gap;
+  }
+
+  getIconLength() {
+    return this.side_length + this.padding * 2;
+  }
+
+  getOpacity() {
+    return this.hide_description ? 0 : 1;
   }
 
   constructor() {}

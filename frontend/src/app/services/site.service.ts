@@ -32,12 +32,12 @@ export class SiteService {
   }
 
   private test_data = [
+    'VisualizeIt',
+    'NetWorth',
+    'BetterMUN',
+    'Ascii-Cam',
     'hi there',
     'something',
-    'BetterMUN',
-    'NetWorth',
-    'Ascii-Cam',
-    'VisualizeIt',
     'other app 1',
     'other app 2',
     'other app 3',

@@ -99,11 +99,8 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     this.checkSelectedIndex();
     requestAnimationFrame(this.tick);
   };
-  // getMousedown = () => this.site.getMousedown();
   getOpacity() {
-    if (!this.physics.isSelected())
-      // if (this.site.getMousedown() || this.physics.getVelocity() !== 0)
-      return 0.7;
+    if (!this.physics.isSelected()) return 0.7;
     return 0;
   }
 
@@ -184,6 +181,7 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
       this.selection.emit(this.current_index);
     }
   }
+  isSelected = () => this.physics.isSelected();
   getSelectedIndex() {
     let scroll_coord = this.physics.getOffset();
     let anchors = this.getAnchors();
@@ -195,12 +193,6 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     let scroll_x = this.physics.getOffset();
     let index_x = index * this.getIconLength() + this.getIconLength() / 2;
     return index_x + scroll_x;
-  }
-  getMiddleScrollDist() {
-    let scroll_x = this.physics.getOffset() + this.getIconLength() / 2;
-    // let index_x = index * this.getIconLength() + this.getIconLength() / 2;
-    // return index_x + scroll_x;
-    return scroll_x;
   }
   getTranslate(dist: number) {
     // let x = `translateX(${this.getTranslateX(dist)}px)`;

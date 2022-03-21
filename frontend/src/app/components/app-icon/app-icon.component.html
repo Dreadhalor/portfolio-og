@@ -1,5 +1,5 @@
 <div
-  class="relative flex border border-white bg-red-400"
+  class="relative flex rounded-lg border border-white bg-red-400"
   [style.padding.px]="getPadding()"
   [style.border]="getBorder()"
 >
@@ -9,11 +9,18 @@
     [style.border]="getBorder()"
   ></div>
   <div
-    class="absolute left-0 right-0 bottom-full flex content-center bg-green-300"
+    class="absolute flex flex-col gap-3 rounded-lg bg-black p-3 text-center text-white shadow-lg duration-200"
+    [style.width.px]="getDescriptionWidth()"
+    [style.bottom]="'100%'"
+    [style.margin-bottom.px]="getGap()"
+    [style.left.px]="
+      center_offset + (getIconLength() - getDescriptionWidth()) / 2
+    "
+    [style.opacity]="getOpacity()"
+    [style.transition-property]="'opacity'"
   >
-    <span class="text-center" [style.margin-bottom.px]="getGap()">{{
-      getTitle()
-    }}</span>
+    <span class="font-bold">{{ getTitle() }}</span>
+    <span>Hey there I'm a description!</span>
     <!-- {{ getTitle() }} -->
   </div>
 </div>
