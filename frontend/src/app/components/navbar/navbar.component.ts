@@ -27,7 +27,10 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   private minified_scale = this.minified_side_length / this.side_length;
   private max_scale = 1;
   private animation_timing_x = 0;
-  private scrolling_y_offset = 80;
+  // private scrolling_y_offset = 80;
+  get scrolling_y_offset() {
+    return (document.body.offsetHeight / 100) * 12;
+  }
   //to prevent animation stuttering when loading between apps
   private max_delta = 1 / 60; //60fps
   private timing_function = bezier(0.42, 0, 0.58, 1); //ease-in-out
@@ -198,7 +201,7 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   getTranslate(dist: number) {
     let x = `${this.getTranslateX(dist)}px`;
-    let y = `${this.getTranslateY(dist)}px`;
+    let y = `${this.getTranslateY()}px`;
     let z = `${this.getTranslateZ(dist)}px`;
     // return `translate3d(${x}, 0px, ${z})`;
     return `translate3d(${x}, ${y}, ${z})`;
@@ -214,7 +217,7 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   getBottom() {
     return -(this.getIconLength() / 2) * (1 - this.getScale());
   }
-  getTranslateY(dist: number) {
+  getTranslateY() {
     let result = 0;
     result += this.scrolling_y_offset * this.getKeyFrame();
     // result += this.getIconLength();
@@ -248,7 +251,7 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   getMiddleTransform() {
     let scale = `scale(${this.getScale()})`;
-    let y = `translateY(${this.getTranslateY(0)}px)`;
+    let y = `translateY(${this.getTranslateY()}px)`;
     // return `${this.getTranslate(dist)} ${scale}`;
     return `${y} ${scale}`;
   }

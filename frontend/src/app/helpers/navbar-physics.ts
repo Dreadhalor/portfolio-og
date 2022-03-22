@@ -98,8 +98,10 @@ export class NavbarPhysics {
     let dy = -event.deltaY;
     let selected_delta = Math.abs(dx) > Math.abs(dy) ? dx : dy;
     // this.velocity = 0;
-    this.velocity = selected_delta;
-    this.move(selected_delta / 2);
+    //totally & utterly arbitrary reduction, it just moves a little too much on scroll
+    let reduced_delta = selected_delta / 4;
+    this.velocity = reduced_delta;
+    this.move(reduced_delta);
   };
   pointerdown(event: PointerEvent) {
     this.state = PhysicsState.POINTERCONTROL;

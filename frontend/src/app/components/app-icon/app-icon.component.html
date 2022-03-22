@@ -7,18 +7,18 @@
 >
   <div class="flex-1" [style.border]="getBorder()"></div>
   <div
-    class="absolute flex flex-col gap-3 rounded-lg bg-black p-3 text-center text-white shadow-lg duration-200"
+    *ngIf="doesDescriptionExist()"
+    class="absolute flex rounded-lg bg-black p-3 text-center text-white opacity-0 shadow-lg duration-200"
     [style.width.px]="getDescriptionWidth()"
-    [style.bottom]="'100%'"
-    [style.margin-bottom.px]="getGap()"
-    [style.left.px]="
-      center_offset + (getIconLength() - getDescriptionWidth()) / 2
-    "
+    [style.height.px]="getDescriptionHeight()"
+    [style.bottom.px]="getDescriptionBottom()"
+    [style.left.px]="getDescriptionLeft()"
     [style.opacity]="getOpacity()"
     [style.transition-property]="'opacity'"
   >
-    <span class="font-bold">{{ getTitle() }}</span>
-    <span>Hey there I'm a description!</span>
-    <!-- {{ getTitle() }} -->
+    <div class="m-auto flex flex-col gap-3">
+      <span class="font-bold">{{ getTitle() }}</span>
+      <span>Hey there I'm a description!</span>
+    </div>
   </div>
 </div>

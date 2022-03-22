@@ -16,7 +16,7 @@
 <div
   #container
   class="pointer-events-none relative mx-auto bg-transparent"
-  style="width: min(100%, 8000px)"
+  style="width: min(100%, 800px)"
   [style.height.px]="getMinifiedIconLength()"
   [style.perspective.px]="getPerspective()"
 >
@@ -37,6 +37,7 @@
     [border]="getBorder()"
     [centerOffset]="getScrollDist(i)"
     [hideDescription]="isSelected()"
+    [translateY]="getTranslateY()"
     [style.bottom.px]="getBottom()"
     [style.left.px]="getCenter() + i * getIconLength() + getOffset()"
     [style.transform]="getTransform(i)"
