@@ -135,7 +135,8 @@ export class NavbarPhysics {
   }
   private timestamp = 0;
   private debounce_counter = 0;
-  private snap_debounce_time = 0.3;
+  private snap_debounce_time = 0.5;
+  // private snap_debounce_time = 5;
 
   tick = (time: number) => {
     this.tickPointer();

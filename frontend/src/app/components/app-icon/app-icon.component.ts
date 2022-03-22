@@ -88,7 +88,7 @@ export class AppIconComponent implements OnInit {
     return this.side_length;
   }
   getPadding() {
-    return this.padding;
+    return this.hasIcon() ? 0 : this.padding;
   }
   getBorder() {
     return `${this.border}px solid white`;
@@ -100,11 +100,11 @@ export class AppIconComponent implements OnInit {
   getDescription() {
     return this.app?.description ?? '';
   }
-  hasImage() {
-    return this.app?.image;
+  hasIcon() {
+    return this.app?.icon;
   }
-  getImage() {
-    if (!this.hasImage()) return '';
-    return `assets/${this.app?.image}`;
+  getIcon() {
+    if (!this.hasIcon()) return '';
+    return `assets/${this.app?.icon}`;
   }
 }

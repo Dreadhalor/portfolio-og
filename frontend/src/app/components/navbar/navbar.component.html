@@ -13,6 +13,17 @@
 >
   <!-- <div class="m-auto"><span class="bg-green-500">fd</span>></div> -->
 </div>
+<sh-app-image
+  class="pointer-events-none absolute"
+  *ngFor="let app of getData(); let i = index"
+  [app]="app"
+  [sideLength]="getSideLength()"
+  [centerOffset]="getScrollDist(i)"
+  [hideDescription]="isSelected()"
+  [translateY]="getTranslateY()"
+  [style.left.px]="getDescriptionLeft(i)"
+  [style.bottom.px]="getDescriptionBottom(i)"
+></sh-app-image>
 <div
   #container
   class="pointer-events-none relative mx-auto bg-transparent"
@@ -21,7 +32,7 @@
   [style.perspective.px]="getPerspective()"
 >
   <div
-    class="absolute z-10 rounded-lg border-2 border-black"
+    class="absolute z-10 rounded-lg border-4 border-white"
     [style.width.px]="getIconLength()"
     [style.height.px]="getIconLength()"
     [style.bottom.px]="getBottom()"
@@ -39,7 +50,7 @@
     [hideDescription]="isSelected()"
     [translateY]="getTranslateY()"
     [style.bottom.px]="getBottom()"
-    [style.left.px]="getCenter() + i * getIconLength() + getOffset()"
+    [style.left.px]="getIconLeft(i)"
     [style.transform]="getTransform(i)"
     [style.filter]="getFilter(i)"
     [style.z-index]="getZIndex(i)"

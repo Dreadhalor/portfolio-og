@@ -10,6 +10,7 @@ export class SiteService {
       description: 'A pathfinding visualizer, coded in React',
       url: 'https://scotthetrick.com',
       image: 'VisualizeIt.png',
+      icon: 'VisualizeIt_Icon.svg',
     },
     // {
     //   name: 'ascii-video',
@@ -21,12 +22,14 @@ export class SiteService {
         'A finance app for tracking your spending across multiple bank accounts.',
       url: 'https://networth.cool',
       image: 'NetWorth.png',
+      icon: 'NetWorth_Icon.svg',
     },
     {
       name: 'BetterMUN.com',
       description: 'The greatest MUN app the world has ever seen.',
       url: 'https://bettermun.com/about',
       image: 'BetterMUN.png',
+      icon: 'BetterMUN_Icon.svg',
     },
     {
       name: 'VisualizeIt!',

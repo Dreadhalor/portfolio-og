@@ -1,21 +1,19 @@
 <div
-  class="relative flex rounded-lg border border-white bg-black"
-  [style.padding.px]="getPadding()"
+  class="relative overflow-hidden rounded-lg bg-black"
   [style.border]="getBorder()"
   [style.width.px]="getSideLength()"
   [style.height.px]="getSideLength()"
+  [style.padding.px]="getPadding()"
 >
-  <div class="flex-1" [style.border]="getBorder()"></div>
-  <img
-    class="flex-1"
+  <div
+    *ngIf="!hasIcon()"
+    class="h-full w-full rounded-md"
     [style.border]="getBorder()"
-    src="assets/VisualizeIt.png"
+  ></div>
+  <img
+    *ngIf="hasIcon()"
+    class="h-full w-full rounded-md"
+    [src]="getIcon()"
+    [style.object-fit]="'cover'"
   />
-  <sh-app-image
-    [app]="app"
-    [sideLength]="side_length"
-    [centerOffset]="center_offset"
-    [hideDescription]="hide_description"
-    [translateY]="translate_y"
-  ></sh-app-image>
 </div>

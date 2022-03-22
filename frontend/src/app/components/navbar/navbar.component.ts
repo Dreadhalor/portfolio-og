@@ -23,7 +23,8 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private side_length = 80;
   private minified_side_length = 30;
-  private padding = 10;
+  private padding = 5;
+  private margin = 10;
   private minified_scale = this.minified_side_length / this.side_length;
   private max_scale = 1;
   private animation_timing_x = 0;
@@ -164,6 +165,9 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   getCenter() {
     return this.getContainerWidth() / 2;
   }
+  getBodyCenter() {
+    return document.body.offsetWidth / 2;
+  }
   getContainerWidth() {
     return this.container?.nativeElement?.offsetWidth ?? 0;
   }
@@ -199,6 +203,9 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     let index_x = index * this.getIconLength() + this.getIconLength() / 2;
     return index_x + scroll_x;
   }
+  getIconLeft(index: number) {
+    return this.getCenter() + index * this.getIconLength() + this.getOffset();
+  }
   getTranslate(dist: number) {
     let x = `${this.getTranslateX(dist)}px`;
     let y = `${this.getTranslateY()}px`;
@@ -206,7 +213,6 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     // return `translate3d(${x}, 0px, ${z})`;
     return `translate3d(${x}, ${y}, ${z})`;
   }
-  private margin = this.padding;
   getTranslateX(dist: number) {
     let result = 0;
     if (Math.abs(dist) > this.margin) result += Math.sign(dist) * this.margin;
@@ -254,5 +260,58 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     let y = `translateY(${this.getTranslateY()}px)`;
     // return `${this.getTranslate(dist)} ${scale}`;
     return `${y} ${scale}`;
+  }
+
+  getDescriptionLeft(index: number) {
+    let dist = this.getScrollDist(index);
+    let centered =
+      this.getBodyCenter() +
+      index * this.getIconLength() +
+      this.getOffset() -
+      (this.getDescriptionWidth() - this.getIconLength()) / 2;
+    let offset = this.getXOffsetDescription(index);
+    return centered + offset;
+  }
+  private description_scale = 0.7;
+  getDescriptionWidth() {
+    let min = Math.min(
+      this.getAvailableDescriptionHeight(),
+      this.getAvailableDescriptionWidth()
+    );
+    return min * this.description_scale;
+  }
+  getDescriptionHeight() {
+    let min = Math.min(
+      this.getAvailableDescriptionHeight(),
+      this.getAvailableDescriptionWidth()
+    );
+    return min * this.description_scale;
+  }
+  getAvailableDescriptionHeight() {
+    let icon_bottom = -this.getTranslateY();
+    let icon_height = this.getIconLength();
+    let available_height =
+      document.body.offsetHeight - icon_bottom - icon_height;
+    return available_height;
+  }
+  getAvailableDescriptionWidth() {
+    return document.body.offsetWidth;
+  }
+  getDescriptionBottom(index: number) {
+    let available_height = this.getAvailableDescriptionHeight();
+    let centered_bottom =
+      this.getIconLength() -
+      this.getTranslateY() +
+      ((available_height - this.getDescriptionHeight()) / 2) * 0.85;
+    let adjustment = Math.pow(Math.abs(this.getScrollDist(index)), 2) / 300;
+
+    // console.log(adjustment);
+    return centered_bottom + adjustment;
+  }
+  getXOffsetDescription(index: number) {
+    let speed_factor = this.getDescriptionWidth() / this.getIconLength();
+    // let speed_factor = 1;
+    return this.getScrollDist(index) * speed_factor;
+    // return 0;
   }
 }
