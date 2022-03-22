@@ -15,9 +15,13 @@ export class NavbarPhysics {
   private velocity_limit = 100;
   private velocity_zero_limit = 0;
   private velocity_snap_start_limit = 5;
-  private velocity_snap_end_limit = 3;
+  private velocity_snap_end_limit = 5;
   private k = 0.02;
   private damping = 0.97;
+  private timestamp = 0;
+  private debounce_counter = 0;
+  private snap_debounce_time = 0.8;
+  private last_snap: number | null = null;
 
   //metadata
   private _state = PhysicsState.SNAPPED;
@@ -25,8 +29,10 @@ export class NavbarPhysics {
     return this._state;
   }
   set state(state: PhysicsState) {
-    if (state === PhysicsState.SNAPPED) this.site.setSnapped(true);
-    else this.site.setSnapped(false);
+    if (state === PhysicsState.SNAPPED) {
+      this.site.setSnapped(true);
+      this.last_snap = this.getOffset();
+    } else this.site.setSnapped(false);
     this._state = state;
   }
   getState() {
@@ -65,6 +71,7 @@ export class NavbarPhysics {
   }
   setOffset(x_coord: number) {
     this.offset = x_coord;
+    this.state = PhysicsState.FREEFALL;
   }
 
   //anchors
@@ -133,10 +140,6 @@ export class NavbarPhysics {
     this.timestamp = timestamp;
     return delta / 1000;
   }
-  private timestamp = 0;
-  private debounce_counter = 0;
-  private snap_debounce_time = 0.5;
-  // private snap_debounce_time = 5;
 
   tick = (time: number) => {
     this.tickPointer();
@@ -187,11 +190,12 @@ export class NavbarPhysics {
         ) {
           this.offset = anchor;
           //if velocity === 0 the user must have just tapped the navbar & not scrolled, so skip debouncing for a smoother experience
-          if (this.velocity === 0) this.state = PhysicsState.SNAPPED;
+          if (this.velocity === 0 || this.getOffset() === this.last_snap)
+            this.state = PhysicsState.SNAPPED;
           else {
-            this.velocity = 0;
             this.state = PhysicsState.DEBOUNCING;
           }
+          this.velocity = 0;
           return;
         }
       }

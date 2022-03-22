@@ -20,6 +20,22 @@ import { SiteService } from 'src/app/services/site.service';
 export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('container') container!: ElementRef<HTMLDivElement>;
   @Output('selection') selection = new EventEmitter<number>();
+  private default_bg = 'rgb(229,231,235)';
+  private current_bg = this.default_bg;
+  setBG() {
+    let selected = this.getSelectedIndex();
+    if (selected < 0) {
+      this.current_bg = this.default_bg;
+      return;
+    }
+    let project = this.site.projects[selected];
+    let color = project?.navbar_color;
+    this.current_bg = color ?? this.default_bg;
+  }
+  getBG() {
+    // this.setBG();
+    return this.current_bg;
+  }
 
   private side_length = 80;
   private minified_side_length = 30;
@@ -188,6 +204,7 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     ) {
       this.current_index = index;
       this.selection.emit(this.current_index);
+      this.setBG();
     }
   }
   isSelected = () => this.physics.isSelected();
