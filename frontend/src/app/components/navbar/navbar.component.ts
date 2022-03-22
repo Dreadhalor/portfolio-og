@@ -129,12 +129,12 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   getOffset = () => this.physics.getOffset();
   getData() {
-    return this.site.getTestData();
+    return this.site.projects;
   }
   getAnchors() {
     let data = this.getData();
     let lefts = data.map(
-      (val: string, index: number) => index * this.getIconLength()
+      (val: any, index: number) => index * this.getIconLength()
     );
     let anchors = lefts.map((x_coord) => -(x_coord + this.getIconLength() / 2));
     return anchors;
@@ -144,7 +144,7 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   scrolled = (event: WheelEvent) => this.physics.scrolled(event);
 
   getContentWidth() {
-    let num = this.site.getTestData().length;
+    let num = this.getData().length;
     let length = num * this.getIconLength();
     return length;
   }

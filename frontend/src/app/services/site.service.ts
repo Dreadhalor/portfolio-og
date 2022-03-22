@@ -6,8 +6,10 @@ import { Injectable } from '@angular/core';
 export class SiteService {
   public projects = [
     {
-      name: 'ScottHetrick.com',
+      name: 'VisualizeIt!',
+      description: 'A pathfinding visualizer, coded in React',
       url: 'https://scotthetrick.com',
+      image: 'VisualizeIt.png',
     },
     // {
     //   name: 'ascii-video',
@@ -15,11 +17,70 @@ export class SiteService {
     // },
     {
       name: 'NetWorth',
+      description:
+        'A finance app for tracking your spending across multiple bank accounts.',
       url: 'https://networth.cool',
+      image: 'NetWorth.png',
     },
     {
       name: 'BetterMUN.com',
-      url: 'https://bettermun.com',
+      description: 'The greatest MUN app the world has ever seen.',
+      url: 'https://bettermun.com/about',
+      image: 'BetterMUN.png',
+    },
+    {
+      name: 'VisualizeIt!',
+      description: 'A pathfinding visualizer, coded in React',
+      url: 'https://scotthetrick.com',
+      image: 'VisualizeIt.png',
+    },
+    {
+      name: 'VisualizeIt!',
+      description: 'A pathfinding visualizer, coded in React',
+      url: 'https://scotthetrick.com',
+      image: 'VisualizeIt.png',
+    },
+    {
+      name: 'VisualizeIt!',
+      description: 'A pathfinding visualizer, coded in React',
+      url: 'https://scotthetrick.com',
+      image: 'VisualizeIt.png',
+    },
+    {
+      name: 'VisualizeIt!',
+      description: 'A pathfinding visualizer, coded in React',
+      url: 'https://scotthetrick.com',
+      image: 'VisualizeIt.png',
+    },
+    {
+      name: 'VisualizeIt!',
+      description: 'A pathfinding visualizer, coded in React',
+      url: 'https://scotthetrick.com',
+      image: 'VisualizeIt.png',
+    },
+    {
+      name: 'VisualizeIt!',
+      description: 'A pathfinding visualizer, coded in React',
+      url: 'https://scotthetrick.com',
+      image: 'VisualizeIt.png',
+    },
+    {
+      name: 'VisualizeIt!',
+      description: 'A pathfinding visualizer, coded in React',
+      url: 'https://scotthetrick.com',
+      image: 'VisualizeIt.png',
+    },
+    {
+      name: 'VisualizeIt!',
+      description: 'A pathfinding visualizer, coded in React',
+      url: 'https://scotthetrick.com',
+      image: 'VisualizeIt.png',
+    },
+    {
+      name: 'VisualizeIt!',
+      description: 'A pathfinding visualizer, coded in React',
+      url: 'https://scotthetrick.com',
+      image: 'VisualizeIt.png',
     },
   ];
 

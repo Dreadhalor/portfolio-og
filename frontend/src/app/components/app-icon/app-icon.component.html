@@ -1,24 +1,21 @@
 <div
-  class="relative flex rounded-lg border border-white bg-red-400"
+  class="relative flex rounded-lg border border-white bg-black"
   [style.padding.px]="getPadding()"
   [style.border]="getBorder()"
   [style.width.px]="getSideLength()"
   [style.height.px]="getSideLength()"
 >
   <div class="flex-1" [style.border]="getBorder()"></div>
-  <div
-    *ngIf="doesDescriptionExist()"
-    class="absolute flex rounded-lg bg-black p-3 text-center text-white opacity-0 shadow-lg duration-200"
-    [style.width.px]="getDescriptionWidth()"
-    [style.height.px]="getDescriptionHeight()"
-    [style.bottom.px]="getDescriptionBottom()"
-    [style.left.px]="getDescriptionLeft()"
-    [style.opacity]="getOpacity()"
-    [style.transition-property]="'opacity'"
-  >
-    <div class="m-auto flex flex-col gap-3">
-      <span class="font-bold">{{ getTitle() }}</span>
-      <span>Hey there I'm a description!</span>
-    </div>
-  </div>
+  <img
+    class="flex-1"
+    [style.border]="getBorder()"
+    src="assets/VisualizeIt.png"
+  />
+  <sh-app-image
+    [app]="app"
+    [sideLength]="side_length"
+    [centerOffset]="center_offset"
+    [hideDescription]="hide_description"
+    [translateY]="translate_y"
+  ></sh-app-image>
 </div>
