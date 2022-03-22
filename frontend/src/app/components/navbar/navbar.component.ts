@@ -272,7 +272,10 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
     let offset = this.getXOffsetDescription(index);
     return centered + offset;
   }
-  private description_scale = 0.7;
+  private description_scale = 0.8;
+  getDescriptionScale() {
+    return this.description_scale;
+  }
   getDescriptionWidth() {
     let min = Math.min(
       this.getAvailableDescriptionHeight(),
@@ -299,19 +302,16 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   getDescriptionBottom(index: number) {
     let available_height = this.getAvailableDescriptionHeight();
-    let centered_bottom =
-      this.getIconLength() -
-      this.getTranslateY() +
-      ((available_height - this.getDescriptionHeight()) / 2) * 0.85;
+    let icon_top = this.getIconLength() - this.getTranslateY();
+    let remaining_to_center =
+      (available_height - this.getDescriptionHeight()) / 2;
+    let gap = Math.max(15, remaining_to_center * 0.3);
+    let centered_bottom = icon_top + gap;
     let adjustment = Math.pow(Math.abs(this.getScrollDist(index)), 2) / 300;
-
-    // console.log(adjustment);
     return centered_bottom + adjustment;
   }
   getXOffsetDescription(index: number) {
     let speed_factor = this.getDescriptionWidth() / this.getIconLength();
-    // let speed_factor = 1;
     return this.getScrollDist(index) * speed_factor;
-    // return 0;
   }
 }

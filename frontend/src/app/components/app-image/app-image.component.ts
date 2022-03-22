@@ -11,6 +11,7 @@ export class AppImageComponent implements OnInit {
   @Input('centerOffset') center_offset = 0;
   @Input('translateY') translate_y = 0;
   @Input('hideDescription') hide_description = true;
+  @Input('descriptionScale') description_scale = 1;
 
   constructor() {}
 
@@ -20,7 +21,6 @@ export class AppImageComponent implements OnInit {
     return this.side_length;
   }
 
-  private description_scale = 0.7;
   getDescriptionWidth() {
     let min = Math.min(
       this.getAvailableDescriptionHeight(),
@@ -44,25 +44,6 @@ export class AppImageComponent implements OnInit {
   }
   getAvailableDescriptionWidth() {
     return document.body.offsetWidth;
-  }
-  getDescriptionBottom() {
-    let available_height = this.getAvailableDescriptionHeight();
-    let centered_bottom =
-      this.getIconLength() +
-      ((available_height - this.getDescriptionHeight()) / 2) * 0.85;
-    let adjustment = Math.pow(Math.abs(this.center_offset), 2) / 300;
-
-    // console.log(adjustment);
-    return centered_bottom * 1 + adjustment;
-  }
-  getDescriptionLeft() {
-    // let speed_factor =
-    //   (document.body.offsetWidth / this.getDescriptionWidth()) * 3;
-    let speed_factor = this.getDescriptionWidth() / this.getIconLength();
-    return (
-      this.center_offset * speed_factor +
-      (this.getIconLength() - this.getDescriptionWidth()) / 2
-    );
   }
 
   getTitle() {

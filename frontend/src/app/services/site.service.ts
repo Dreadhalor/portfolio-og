@@ -19,13 +19,13 @@ export class SiteService {
     {
       name: 'NetWorth',
       description:
-        'A finance app for tracking your spending across multiple bank accounts.',
+        'A finance app for tracking your accounts across multiple banks.',
       url: 'https://networth.cool',
       image: 'NetWorth.png',
       icon: 'NetWorth_Icon.svg',
     },
     {
-      name: 'BetterMUN.com',
+      name: 'BetterMUN',
       description: 'The greatest MUN app the world has ever seen.',
       url: 'https://bettermun.com/about',
       image: 'BetterMUN.png',

@@ -10,9 +10,7 @@
   (wheel)="scrolled($event)"
   [style.pointer-events]="getOverlayPointerEvents()"
   class="absolute top-0 bottom-0 right-0 left-0 flex bg-black transition-all duration-200"
->
-  <!-- <div class="m-auto"><span class="bg-green-500">fd</span>></div> -->
-</div>
+></div>
 <sh-app-image
   class="pointer-events-none absolute"
   *ngFor="let app of getData(); let i = index"
@@ -21,6 +19,7 @@
   [centerOffset]="getScrollDist(i)"
   [hideDescription]="isSelected()"
   [translateY]="getTranslateY()"
+  [descriptionScale]="getDescriptionScale()"
   [style.left.px]="getDescriptionLeft(i)"
   [style.bottom.px]="getDescriptionBottom(i)"
 ></sh-app-image>
