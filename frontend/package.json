@@ -5,7 +5,7 @@
     "ng": "ng",
     "start": "ng serve --ssl true",
     "start-host": "ng serve --ssl true --host 192.168.1.190",
-    "start-host-capi": "ng serve --ssl true --host 192.168.68.118",
+    "start-host-capi": "ng serve --ssl true --host 192.168.68.117",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",

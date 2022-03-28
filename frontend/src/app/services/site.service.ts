@@ -43,8 +43,8 @@ export class SiteService {
       navbar_color: 'rgb(20,20,20)',
     },
     {
-      name: 'ASCII-Cam',
-      description: 'The Matrix something something',
+      name: 'Matrix-Cam',
+      description: 'Vanilla JS app using TensorFlow.js for person detection.',
       url: 'https://ascii-video.glitch.me',
       image: 'ASCII-Cam.jpg',
       icon: 'ASCII-Cam_Icon.svg',
