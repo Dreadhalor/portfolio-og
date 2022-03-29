@@ -1,4 +1,3 @@
-import { EventEmitter } from '@angular/core';
 import { SiteService } from '../services/site.service';
 
 enum PhysicsState {

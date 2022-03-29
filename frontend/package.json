@@ -2,7 +2,7 @@
   "name": "portfolio-site",
   "version": "0.0.0",
   "scripts": {
-    "deploy": "ng deploy --base-href=https://dreadhalor.github.io/portfolio/",
+    "deploy": "ng deploy --base-href=https://scotthetrick.com/ --cname=scotthetrick.com",
     "ng": "ng",
     "start": "ng serve --ssl true",
     "start-host": "ng serve --ssl true --host 192.168.1.190",

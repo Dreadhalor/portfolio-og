@@ -58,9 +58,10 @@ export class NavbarComponent implements OnInit, OnDestroy, AfterViewInit {
   incrementAnimation(delta: number) {
     let direction = !this.physics.isSelected();
     let result;
+    let default_increment = delta / this.animation_seconds;
     let increment = Math.min(delta, this.max_delta) / this.animation_seconds;
     if (direction) {
-      result = this.animation_timing_x + increment;
+      result = this.animation_timing_x + default_increment;
     } else result = this.animation_timing_x - increment;
     if (result > 1) result = 1;
     if (result < 0) result = 0;
