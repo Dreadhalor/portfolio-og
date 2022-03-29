@@ -8,7 +8,7 @@ export class SiteService {
     {
       name: 'VisualizeIt!',
       description: 'A pathfinding visualizer, coded in React',
-      url: 'https://scotthetrick.com',
+      url: 'https://dreadhalor.github.io/AlgorithmVisualizer/',
       image: 'VisualizeIt.png',
       icon: 'VisualizeIt_Icon.svg',
       navbar_color: 'rgb(108, 117, 125)',
@@ -34,14 +34,14 @@ export class SiteService {
       icon: 'BetterMUN_Icon.svg',
       navbar_color: 'rgb(255,255,255)',
     },
-    {
-      name: 'ShareMe',
-      description: 'A social media app for sharing images.',
-      url: 'https://192.168.1.190:3000/login',
-      image: 'ShareMe.png',
-      icon: 'ShareMe_Icon.svg',
-      navbar_color: 'rgb(20,20,20)',
-    },
+    // {
+    //   name: 'ShareMe',
+    //   description: 'A social media app for sharing images.',
+    //   url: 'https://192.168.1.190:3000/login',
+    //   image: 'ShareMe.png',
+    //   icon: 'ShareMe_Icon.svg',
+    //   navbar_color: 'rgb(20,20,20)',
+    // },
     {
       name: 'Matrix-Cam',
       description: 'Vanilla JS app using TensorFlow.js for person detection.',
@@ -50,48 +50,48 @@ export class SiteService {
       icon: 'ASCII-Cam_Icon.svg',
       navbar_color: 'rgb(0,0,0)',
     },
-    {
-      name: 'TBD',
-      description: 'Gimme a minute to code more',
-      url: 'https://scotthetrick.com',
-      // image: 'VisualizeIt.png',
-    },
-    {
-      name: 'VisualizeIt!',
-      description: 'A pathfinding visualizer, coded in React',
-      url: 'https://scotthetrick.com',
-      image: 'VisualizeIt.png',
-    },
-    {
-      name: 'VisualizeIt!',
-      description: 'A pathfinding visualizer, coded in React',
-      url: 'https://scotthetrick.com',
-      image: 'VisualizeIt.png',
-    },
-    {
-      name: 'VisualizeIt!',
-      description: 'A pathfinding visualizer, coded in React',
-      url: 'https://scotthetrick.com',
-      image: 'VisualizeIt.png',
-    },
-    {
-      name: 'VisualizeIt!',
-      description: 'A pathfinding visualizer, coded in React',
-      url: 'https://scotthetrick.com',
-      image: 'VisualizeIt.png',
-    },
-    {
-      name: 'VisualizeIt!',
-      description: 'A pathfinding visualizer, coded in React',
-      url: 'https://scotthetrick.com',
-      image: 'VisualizeIt.png',
-    },
-    {
-      name: 'VisualizeIt!',
-      description: 'A pathfinding visualizer, coded in React',
-      url: 'https://scotthetrick.com',
-      image: 'VisualizeIt.png',
-    },
+    // {
+    //   name: 'TBD',
+    //   description: 'Gimme a minute to code more',
+    //   url: 'https://scotthetrick.com',
+    //   // image: 'VisualizeIt.png',
+    // },
+    // {
+    //   name: 'VisualizeIt!',
+    //   description: 'A pathfinding visualizer, coded in React',
+    //   url: 'https://scotthetrick.com',
+    //   image: 'VisualizeIt.png',
+    // },
+    // {
+    //   name: 'VisualizeIt!',
+    //   description: 'A pathfinding visualizer, coded in React',
+    //   url: 'https://scotthetrick.com',
+    //   image: 'VisualizeIt.png',
+    // },
+    // {
+    //   name: 'VisualizeIt!',
+    //   description: 'A pathfinding visualizer, coded in React',
+    //   url: 'https://scotthetrick.com',
+    //   image: 'VisualizeIt.png',
+    // },
+    // {
+    //   name: 'VisualizeIt!',
+    //   description: 'A pathfinding visualizer, coded in React',
+    //   url: 'https://scotthetrick.com',
+    //   image: 'VisualizeIt.png',
+    // },
+    // {
+    //   name: 'VisualizeIt!',
+    //   description: 'A pathfinding visualizer, coded in React',
+    //   url: 'https://scotthetrick.com',
+    //   image: 'VisualizeIt.png',
+    // },
+    // {
+    //   name: 'VisualizeIt!',
+    //   description: 'A pathfinding visualizer, coded in React',
+    //   url: 'https://scotthetrick.com',
+    //   image: 'VisualizeIt.png',
+    // },
   ];
 
   private snapped = false;
