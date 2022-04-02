@@ -13,10 +13,22 @@ export class SiteService {
       icon: 'VisualizeIt_Icon.svg',
       navbar_color: 'rgb(108, 117, 125)',
     },
-    // {
-    //   name: 'ascii-video',
-    //   url: 'https://ascii-video.glitch.me/',
-    // },
+    {
+      name: 'Enlight',
+      description: 'A relaxing playground of shine and shadow.',
+      url: 'https://dreadhalor.github.io/enlight',
+      image: 'Enlight.png',
+      icon: 'Enlight_Icon.svg',
+      navbar_color: 'rgb(0,0,0)',
+    },
+    {
+      name: 'Matrix-Cam',
+      description: 'Vanilla JS app using TensorFlow.js for person detection.',
+      url: 'https://ascii-video.glitch.me',
+      image: 'ASCII-Cam.jpg',
+      icon: 'ASCII-Cam_Icon.svg',
+      navbar_color: 'rgb(0,0,0)',
+    },
     {
       name: 'NetWorth',
       description:
@@ -42,25 +54,11 @@ export class SiteService {
     //   icon: 'ShareMe_Icon.svg',
     //   navbar_color: 'rgb(20,20,20)',
     // },
-    {
-      name: 'Matrix-Cam',
-      description: 'Vanilla JS app using TensorFlow.js for person detection.',
-      url: 'https://ascii-video.glitch.me',
-      image: 'ASCII-Cam.jpg',
-      icon: 'ASCII-Cam_Icon.svg',
-      navbar_color: 'rgb(0,0,0)',
-    },
     // {
     //   name: 'TBD',
     //   description: 'Gimme a minute to code more',
     //   url: 'https://scotthetrick.com',
     //   // image: 'VisualizeIt.png',
-    // },
-    // {
-    //   name: 'VisualizeIt!',
-    //   description: 'A pathfinding visualizer, coded in React',
-    //   url: 'https://scotthetrick.com',
-    //   image: 'VisualizeIt.png',
     // },
     // {
     //   name: 'VisualizeIt!',
