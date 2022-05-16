@@ -46,20 +46,20 @@ export class SiteService {
       navbar_color: 'rgb(20,20,20)',
     },
     {
+      name: 'BetterMUN',
+      description: 'The greatest MUN app the world has ever seen.',
+      url: 'https://bettermun.com/about',
+      image: 'BetterMUN.png',
+      icon: 'BetterMUN_Icon.svg',
+      navbar_color: 'rgb(255,255,255)',
+    },
+    {
       name: 'NetWorth',
       description:
         'A finance app for tracking your accounts across multiple banks.',
       url: 'https://networth.cool',
       image: 'NetWorth.png',
       icon: 'NetWorth_Icon.svg',
-      navbar_color: 'rgb(255,255,255)',
-    },
-    {
-      name: 'BetterMUN',
-      description: 'The greatest MUN app the world has ever seen.',
-      url: 'https://bettermun.com/about',
-      image: 'BetterMUN.png',
-      icon: 'BetterMUN_Icon.svg',
       navbar_color: 'rgb(255,255,255)',
     },
     // {
