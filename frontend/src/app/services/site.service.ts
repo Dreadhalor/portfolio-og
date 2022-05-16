@@ -6,12 +6,12 @@ import { Injectable } from '@angular/core';
 export class SiteService {
   public projects = [
     {
-      name: 'VisualizeIt!',
-      description: 'A pathfinding visualizer, coded in React',
-      url: 'https://dreadhalor.github.io/AlgorithmVisualizer/',
-      image: 'VisualizeIt.png',
-      icon: 'VisualizeIt_Icon.svg',
-      navbar_color: 'rgb(108, 117, 125)',
+      name: 'Minesweeper',
+      description: `Ittttttt's Minesweeper!`,
+      url: 'https://dreadhalor.github.io/minesweeper',
+      image: 'Minesweeper.png',
+      icon: 'Minesweeper_Icon.svg',
+      navbar_color: 'rgb(31, 47, 134)',
     },
     {
       name: 'Enlight',
@@ -22,12 +22,28 @@ export class SiteService {
       navbar_color: 'rgb(0,0,0)',
     },
     {
+      name: 'VisualizeIt!',
+      description: 'A pathfinding visualizer, coded in React',
+      url: 'https://dreadhalor.github.io/AlgorithmVisualizer/',
+      image: 'VisualizeIt.png',
+      icon: 'VisualizeIt_Icon.svg',
+      navbar_color: 'rgb(108, 117, 125)',
+    },
+    {
       name: 'Matrix-Cam',
       description: 'Vanilla JS app using TensorFlow.js for person detection.',
       url: 'https://ascii-video.glitch.me',
       image: 'ASCII-Cam.jpg',
       icon: 'ASCII-Cam_Icon.svg',
       navbar_color: 'rgb(0,0,0)',
+    },
+    {
+      name: 'ShareMe',
+      description: 'A Pinterest-inspired social media app.',
+      url: 'https://dreadhalor.github.io/shareme/#/login',
+      image: 'ShareMe.png',
+      icon: 'ShareMe_Icon.svg',
+      navbar_color: 'rgb(20,20,20)',
     },
     {
       name: 'NetWorth',
@@ -46,14 +62,6 @@ export class SiteService {
       icon: 'BetterMUN_Icon.svg',
       navbar_color: 'rgb(255,255,255)',
     },
-    // {
-    //   name: 'ShareMe',
-    //   description: 'A social media app for sharing images.',
-    //   url: 'https://192.168.1.190:3000/login',
-    //   image: 'ShareMe.png',
-    //   icon: 'ShareMe_Icon.svg',
-    //   navbar_color: 'rgb(20,20,20)',
-    // },
     // {
     //   name: 'TBD',
     //   description: 'Gimme a minute to code more',
